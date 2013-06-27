@@ -1,0 +1,25 @@
+<launch>
+  <!-- 
+  -->
+  
+  <!-- 
+  	This pushes the local PYTHONPATH into the launch file, so that the NaoQI API is found.
+    You need to add the Nao's API dir to your PYTHONPATH so that the modules are found.
+  -->
+  <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
+
+  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+  
+
+  
+ <node name="ar_pose" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
+		<param name="marker_pattern_list" type="string" value="$(find ar_pose)/data/morris/object_data"/>
+		<param name="threshold" type="int" value="100"/>
+		<param name="publish_tf" type="bool" value="false"/>
+		<remap to="/nao_cam/top/image_raw" from="/image_raw"/>
+		<remap to="/nao_cam/top/camera_info" from="/camera_info"/>
+  </node>
+  
+
+</launch>

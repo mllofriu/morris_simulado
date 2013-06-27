@@ -1,0 +1,67 @@
+<launch>
+  <!-- 
+  -->
+  
+  <!-- 
+  	This pushes the local PYTHONPATH into the launch file, so that the NaoQI API is found.
+    You need to add the Nao's API dir to your PYTHONPATH so that the modules are found.
+  -->
+  <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
+
+  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+  
+
+  
+  <node pkg="nao_driver" type="nao_walker.py" name="nao_walker" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node pkg="nao_driver" type="nao_sensors.py" name="nao_sensors" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node pkg="nao_driver" type="nao_controller.py" name="nao_controller" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+	  
+  <!--<param name="/camera_info_url" type="string" value="$(find morris_simulation)/config/topCamCalib.yaml"/>-->
+  <node pkg="nao_driver" type="nao_camera_both.py" name="nao_camera_both" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port) fps=5" output="screen">
+  	<param name="camera_switch" type="int" value="1"/>
+  	<param name="fps" type="int" value="20"/>
+  	<param name="topCamParams" type="string" value="package://morris_simulation/config/topCamCalib.yml"/>
+  	<param name="bottomCamParams" type="string" value="package://morris_simulation/config/bottomCamCalib.yml"/>
+  </node>
+
+
+  <!-- state publish -->
+ <param name="robot_description" command="$(find xacro)/xacro.py $(find nao_description)/urdf/nao_robot_v4.urdf.xacro" />  
+  
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" >   
+  </node>
+
+	
+ <node name="detectLines" pkg="morris_simulation" type="detectLines.py" args="" output="screen" > 
+ 	<remap to="/nao_cam/bottom/image_raw" from="/image_raw"/>
+ 	<remap to="/nao_cam/bottom/camera_info" from="/camera_info"/>
+ </node> 
+  <!--
+   <node name="linesPublisher" pkg="morris_simulation" type="lineMarkerPublisher.py" args="" 
+        /> -->
+        
+  <node name="ar_pose" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
+		<param name="marker_pattern_list" type="string" value="$(find ar_pose)/data/morris/object_data"/>
+		<param name="threshold" type="int" value="100"/>
+		<param name="publish_tf" type="bool" value="false"/>
+		<remap to="/nao_cam/top/image_raw" from="/image_raw"/>
+		<remap to="/nao_cam/top/camera_info" from="/camera_info"/>
+  </node>
+  
+  <!--	
+   <node name="pilotAffordancesDriver" pkg="morris_simulation" type="pilotAffordancesDriver.py" args="" output="screen" />
+   -->
+  <!-- 	
+  <group ns="/nao_cam/bottom/">
+	  <node name="image_proc_bottom" pkg="image_proc" type="image_proc" args="" output="screen" >
+	 </node>
+  </group>
+ 
+  <group ns="/nao_cam/top/">
+	  <node name="image_proc_top" pkg="image_proc" type="image_proc" args="" output="screen" >
+	 </node>
+  </group>
+    
+  -->
+</launch>

@@ -1,0 +1,7 @@
+<launch>
+  
+ <node name="detectLines" pkg="visionTests" type="detectLines.py" args="" 
+        />
+  <node name="linesPublisher" pkg="visionTests" type="lineMarkerPublisher.py" args="" 
+        />
+</launch>

@@ -1,0 +1,48 @@
+<launch>
+  <!-- 
+  -->
+  
+  <!-- 
+  	This pushes the local PYTHONPATH into the launch file, so that the NaoQI API is found.
+    You need to add the Nao's API dir to your PYTHONPATH so that the modules are found.
+  -->
+  <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
+
+  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+  
+  <node pkg="visionTests" type="configCam.py" name="configCam" required="false" output="screen"/>
+  
+  <node pkg="nao_driver" type="nao_walker.py" name="nao_walker" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node pkg="nao_driver" type="nao_sensors.py" name="nao_sensors" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node pkg="nao_driver" type="nao_controller.py" name="nao_controller" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <param name="camera_switch" type="int" value="1"/>
+  <param name="fps" type="int" value="5"/>
+  <node pkg="nao_driver" type="nao_camera.py" name="nao_camera" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port) camera_switch=1 fps=5" output="screen">
+  </node>
+  <!-- Location of the cmvision color file -->
+  <param name="cmvision/color_file" type="string" 
+         value="$(find visionTests)/config/colors.txt" />
+  <!-- Enable Mean shift filtering -->
+  <param name="cmvision/mean_shift_on" type="bool" value="false"/>
+  <!-- Spatial bandwidth: Bigger = smoother image -->
+  <param name="cmvision/spatial_radius_pix" type="double" value="2.0"/>
+  <!-- Color bandwidth: Bigger = smoother image-->
+  <param name="cmvision/color_radius_pix" type="double" value="40.0"/>
+  <node name="cmvision" pkg="cmvision" type="cmvision" args="image:=/image_raw" 
+        />
+
+  <!-- state publish -->
+ <param name="robot_description" command="$(find xacro)/xacro.py $(find nao_description)/urdf/nao_robot_v4.urdf.xacro" />  
+  
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" >   
+  </node>
+
+<!--  
+  <node name="ballFinder" pkg="visionTests" type="ballFinder.py" output="screen"/>
+  -->
+
+<!-- 
+ <node name="ballSearcher" pkg="visionTests" type="ballSearcher.py" output="screen"/>
+-->
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="ballFinder" pkg="visionTests" type="ballFinder.py" output="screen"/>
+
+
+</launch>
