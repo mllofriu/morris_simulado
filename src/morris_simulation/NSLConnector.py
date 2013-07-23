@@ -9,11 +9,10 @@ import roslib; roslib.load_manifest('morris_simulation')
 import rospy
 
 import socket
-import robotProtocol_pb2 as rp
-from pilot import Pilot
+import morris_simulation.nsl as rp, InfoGatherer
+from morris_simulation.motion import Pilot
 
 from sitDown import SitDown
-from InfoGatherer import InfoGatherer
 
 class NSLConnector(object):
     '''

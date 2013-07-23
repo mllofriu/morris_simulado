@@ -17,7 +17,7 @@ from geometry_msgs.msg import Point32
 from cv2 import *
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
-# from morris_simulation.geometry import CoordTransformer
+from morris_simulation.geometry import CoordTransformer
 from tf import TransformListener
 import math
 
@@ -42,7 +42,7 @@ class LineDetector(object):
         
         # Wait for info from the camera before getting any line
         rospy.loginfo( "Line Detector: subscribing to info topic")
-        rospy.Subscriber("/camera_info", CameraInfo, self.getCamInfo)
+        rospy.Subscriber("camera_info", CameraInfo, self.getCamInfo)
         self.pubMarker = rospy.Publisher("/line_vis_markers",MarkerArray)
         self.pubLines = rospy.Publisher("/lines",Lines)
         
@@ -51,12 +51,12 @@ class LineDetector(object):
             # Creater transformer from camera
             tfList = TransformListener()
             rospy.loginfo('Started coord transformer with' + str(camInfo.P[0])+  str(camInfo.P[5]))
-            self.coordTransf = CoordTransformer.CoordTransformer(camInfo.P[0], camInfo.P[5], camInfo.width, 
+            self.coordTransf = CoordTransformer(camInfo.P[0], camInfo.P[5], camInfo.width, 
                                                 camInfo.height, tfList, self.camFrame,
                                                 self.floorFrame)
             # Subscribe to actual images
             rospy.loginfo( "subscribing to image topic")
-            rospy.Subscriber("/image_raw", Image, self.processImage)
+            rospy.Subscriber("image", Image, self.processImage)
             
         
     def processImage(self, rosImage):
@@ -70,7 +70,7 @@ class LineDetector(object):
                 print "Macana:", e
                 
             img = np.asarray(img)
-        
+            
 #            rangeFiltered = inRange(img, np.asarray([0,0,0]), np.asarray([200,100,100]))    
 #            gaussian_blur = GaussianBlur(rangeFiltered,(201,201),10)
 #            retval, thrs = threshold(gaussian_blur, 200, 255, THRESH_BINARY)

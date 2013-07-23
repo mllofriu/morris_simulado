@@ -3,7 +3,7 @@ Created on Feb 20, 2013
 
 @author: mllofriu
 '''
-from ballFinder import tfListener
+#from ballFinder import tfListener
 from geometry_msgs.msg import PointStamped, Point, Point32
 from sensor_msgs.msg import PointCloud
 from rospy import Duration
@@ -12,8 +12,6 @@ class CoordTransformer(object):
     '''
     classdocs
     '''
-
-    scale = 2.15
 
     def __init__(self, fx, fy, imgWidth, imgHeight, tfListener, camFrame, floorFrame):
         self.fx = fx
@@ -38,18 +36,21 @@ class CoordTransformer(object):
     def calcPosFromImgCoords(self, imgx, imgy, stamp):
         self.orig.header.stamp = stamp
         
+        # Point z1 is in the proyection line of the point corresponding to (imgx,imgy) in the image 
         self.z1.header.stamp = stamp
         self.z1.point.x = -((self.imgWidth / 2) - imgx) / self.fx
         self.z1.point.y = -((self.imgHeight / 2) - imgy) / self.fy
         
+        # Transforms origin and z1 to floorframe coordinates
+        # Todo: set this using identity transformation as in ar_pose
         origWorld = self.tfListener.transformPoint(self.floorFrame, self.orig).point
         z1World = self.tfListener.transformPoint(self.floorFrame, self.z1).point
         
         paramLambda = origWorld.z / (origWorld.z - z1World.z)
         
         pos = Point()
-        pos.x = -self.scale * (origWorld.x + paramLambda * (origWorld.x - z1World.x))
-        pos.y = -self.scale * (origWorld.y + paramLambda * (origWorld.y - z1World.y))
+        pos.x = -(origWorld.x + paramLambda * (origWorld.x - z1World.x))
+        pos.y = -(origWorld.y + paramLambda * (origWorld.y - z1World.y))
         pos.z = 0
     
         return pos
@@ -59,15 +60,15 @@ class CoordTransformer(object):
 
         for l in lines:
             p1 = Point32()
-            p1.x = -((self.imgWidth / 2) - l[0]) / self.fx
-            p1.y = -((self.imgHeight / 2) - l[1]) / self.fy
-            p1.z = 1
+            p1.x = ((self.imgWidth / 2) - l[0]) / self.fx
+            p1.y = ((self.imgHeight / 2) - l[1]) / self.fy
+            p1.z = .001
             points.append(p1)
             
             p1 = Point32()
-            p1.x = -((self.imgWidth / 2) - l[2]) / self.fx
-            p1.y = -((self.imgHeight / 2) - l[3]) / self.fy
-            p1.z = 1
+            p1.x = ((self.imgWidth / 2) - l[2]) / self.fx
+            p1.y = ((self.imgHeight / 2) - l[3]) / self.fy
+            p1.z = .001
             points.append(p1)
             
         pcl = PointCloud()
@@ -78,19 +79,17 @@ class CoordTransformer(object):
         self.tfListener.waitForTransform(self.camFrame, self.floorFrame, stamp,Duration(5.0) )
         transfPcl = self.tfListener.transformPointCloud(self.floorFrame,pcl)
         
-#         print transfPcl
-        
         self.orig.header.stamp = stamp
         origWorld = self.tfListener.transformPoint(self.floorFrame,self.orig).point
         
         groundPoints = []
         for z1World in transfPcl.points:
 #            print "z1World", z1World   
-            paramLambda = origWorld.z / (origWorld.z - z1World.z)
+            paramLambda = origWorld.z / (z1World.z-origWorld.z)
         
             pos = Point()
-            pos.x = -self.scale * (origWorld.x + paramLambda * (origWorld.x - z1World.x))
-            pos.y = -self.scale * (origWorld.y + paramLambda * (origWorld.y - z1World.y))
+            pos.x = (origWorld.x + paramLambda * (z1World.x - origWorld.x ))
+            pos.y = (origWorld.y + paramLambda * (z1World.y - origWorld.y ))
             pos.z = 0
             
             groundPoints.append(pos)

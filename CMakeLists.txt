@@ -88,10 +88,10 @@ catkin_package(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+ install(PROGRAMS
+   scripts/detect_lines.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS morris_simulation morris_simulation_node
@@ -108,11 +108,20 @@ catkin_package(
 # )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+ install(FILES
+   	launch/morris.launch
+   	launch/cam.launch
+	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+ )
+ 
+  install(FILES
+   	config/bottomCamCalib.yml
+   	#config/bottomCamCalibSim.yml
+   	config/topCamCalib.yml
+   	config/topCamCalibSim.yml
+	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config/
+ )
+
 
 #############
 ## Testing ##

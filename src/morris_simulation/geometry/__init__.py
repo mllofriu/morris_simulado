@@ -1,1 +1,3 @@
-from morris_simulation.coordtransformer import CoordTransformer
+from coordtransformer import CoordTransformer
+from euclid import Point, Line, Movement
+from triangle import Triangle

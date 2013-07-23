@@ -16,8 +16,17 @@
 	  
   <node pkg="nao_driver" type="nao_camera_both.py" name="nao_camera_both" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port) fps=5" output="screen">
   	<param name="camera_switch" type="int" value="1"/>
-  	<param name="fps" type="int" value="5"/>
-  	<param name="topCamParams" type="string" value="package://morris_simulation/config/topCamCalib.yml"/>
+  	<param name="fps" type="int" value="1"/>
+  	 	<!-- 
+  		Image quality constants
+			k960p = 3                # 1280*960
+			k4VGA = 3                # 1280*960
+			kVGA = 2                 # 640*480
+			kQVGA = 1                # 320*240
+			kQQVGA = 0               # 160*120
+	-->
+  	<param name="quality" type="int" value="3"/>
+  	<param name="topCamParams" type="string" value="package://morris_simulation/config/topCamCalibSim.yml"/>
   	<param name="bottomCamParams" type="string" value="package://morris_simulation/config/bottomCamCalib.yml"/>
   </node>
 

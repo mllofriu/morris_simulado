@@ -1,1 +1,2 @@
 from morris_simulation.perception.linedetector import LineDetector
+from morris_simulation.perception.affordancecalc import AffordanceCalc

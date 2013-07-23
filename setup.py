@@ -5,7 +5,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['morris_simulation'],
+    packages=['morris_simulation', 'morris_simulation.perception','morris_simulation.geometry'],
     package_dir={'': 'src'},
     requires=['std_msgs','rospy']
 )
