@@ -8,7 +8,7 @@
   -->
   <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
 
-  <arg name="nao_ip" default="$(optenv NAO_IP 131.247.10.219)" />
+  <arg name="nao_ip" default="$(optenv NAO_IP 10.224.2.182)" />
   <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
   
 
