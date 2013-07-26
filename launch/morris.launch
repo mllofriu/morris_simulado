@@ -14,6 +14,7 @@
 
   
   <node pkg="nao_driver" type="nao_walker.py" name="nao_walker" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+  <node pkg="nao_remote" type="remap_odometry" name="remap_odometry" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
   <node pkg="nao_driver" type="nao_sensors.py" name="nao_sensors" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
   <node pkg="nao_driver" type="nao_controller.py" name="nao_controller" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
 	  
@@ -41,15 +42,15 @@
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" >   
   </node>
 
-<node name="image_proc" pkg="image_proc" type="image_proc" output="screen" ns="/nao_cam/bottom/">
+<node name="image_proc_bottom" pkg="image_proc" type="image_proc" output="screen" ns="/nao_cam/bottom/">
 	<remap to="image_raw" from="image"/>
 </node> 
-<node name="image_proc" pkg="image_proc" type="image_proc" output="screen" ns="/nao_cam/top/">
+<node name="image_proc_top" pkg="image_proc" type="image_proc" output="screen" ns="/nao_cam/top/">
 	<remap to="image_raw" from="image"/>
 </node> 
 
 <node name="detect_lines" pkg="morris_simulation" type="detect_lines.py" output="screen" > 
-	<remap to="/nao_cam/bottom/image_rect" from="image"/>
+	<remap to="/nao_cam/bottom/image_rect_color" from="image"/>
 	<remap to="/nao_cam/bottom/camera_info" from="camera_info"/>
 </node> 
 
