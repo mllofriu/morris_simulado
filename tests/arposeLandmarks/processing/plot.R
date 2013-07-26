@@ -1,7 +1,6 @@
-library(ggplot2)
-
 plotdata <- function(datafile, plotfile){
   d = read.table(datafile, header=T, quote="\"")
+  names(d) = c('knowndistance', 'estdistance')
   summ <- summarySE(d, measurevar="estdistance", groupvars=c("knowndistance"))
 
   model <- summ[,"estdistance"] ~ summ[,"knowndistance"]
@@ -18,5 +17,5 @@ plotdata <- function(datafile, plotfile){
   dev.off()
 }
 
-plotdata("straight.data", "straigth.plot")
-plotdata("45degree.data", "45degree.plot")
+plotdata('../45degree/data/distanceData.data', '45degree.plot')
+plotdata('../straight/data/distanceData.data', 'straight.plot')

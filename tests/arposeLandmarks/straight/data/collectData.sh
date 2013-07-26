@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+for i in `seq 200 100 1000`; do
+	echo "Presione enter para grabar " $i "mm"
+	read line
+	#rosbag record /visualization_marker -O ${i}mm.bag -l 20
+	# record everything just in case
+	rosbag record -a -x "/nao_cam.*" -O ${i}mm.bag &
+	# save pid to kill later	
+	pid=$!	
+	rosrun morris_simulation print_m4_pos.py $i 20 >> distanceData.data
+	kill $pid
+done

@@ -26,7 +26,8 @@ for f in filenames:
 	for topic, msg, t in bag.read_messages():
 		x = msg.pose.position.x
 		y = msg.pose.position.y
-		d = math.sqrt(x**2 + y**2)
+		#d = math.sqrt(x**2 + y**2)
+		d = x
 		print knownDist, d
 	
 	bag.close()
