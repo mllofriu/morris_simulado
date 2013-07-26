@@ -31,9 +31,10 @@ class LineDetector(object):
     bridge = None
     green = None
     camFrame = "/CameraBottom_frame"
-    floorFrame = "/l_sole"
+    floorFrame = "/base_footprint"
     maxLen = 10
     coordTransf = None
+    eps = 20 # pixel width of the discarding frame
     
     def __init__(self):
         rospy.init_node('lineDetector')
@@ -54,6 +55,10 @@ class LineDetector(object):
             self.coordTransf = CoordTransformer(camInfo.P[0], camInfo.P[5], camInfo.width, 
                                                 camInfo.height, tfList, self.camFrame,
                                                 self.floorFrame)
+            
+            # Save info for later
+            self.camInfo = camInfo
+            
             # Subscribe to actual images
             rospy.loginfo( "subscribing to image topic")
             rospy.Subscriber("image", Image, self.processImage)
@@ -75,9 +80,9 @@ class LineDetector(object):
 #            gaussian_blur = GaussianBlur(rangeFiltered,(201,201),10)
 #            retval, thrs = threshold(gaussian_blur, 200, 255, THRESH_BINARY)
 #            img =  bitwise_and(img, img, mask=thrs)
-            
+            #img = GaussianBlur(img,(5,5),10)
             canny = Canny(img, 100, 200)
-            lines = HoughLinesP(canny, 1, cv.CV_PI/180, 50, minLineLength=10,maxLineGap=3)
+            lines = HoughLinesP(canny, 1, cv.CV_PI/180, 30, minLineLength=50,maxLineGap=50)
             
 #             rosImagespy.loginfo(lines)
 #            rospy.loginfo("Processed Image") 
@@ -86,6 +91,12 @@ class LineDetector(object):
     #                #rospy.loginfo(l)
     #                line(img, (l[0], l[1]),(l[2],l[3]), cv.CV_RGB(255, 0, 0), 3, 8)
             if lines <> None:
+                lines = lines[0]
+                # discard lines within a frame of eps pixels
+                eps = self.eps
+                lines = [l for l in lines if l[0] > eps and l[0] < self.camInfo.width - eps 
+                         and l[1] > eps and l[1] < self.camInfo.height - eps]
+                
                 lines, lineMarkers = self.transformLines(lines, rosImage.header.stamp)
 #                rospy.loginfo("Transformed Points") 
                 self.publishLines(lineMarkers,lines, rosImage.header.stamp)
@@ -110,7 +121,7 @@ class LineDetector(object):
         lineMarkers = []
         linesFound = []
         mId = 0
-        tLines = self.coordTransf.transformLines(lines[0], stamp)
+        tLines = self.coordTransf.transformLines(lines, stamp)
 #         rospy.loginfo(lines)
 #        for line in lines[0]:
 #            rospy.loginfo("Transforming Coordinates") 

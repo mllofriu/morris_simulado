@@ -38,6 +38,7 @@ class CoordTransformer(object):
         
         # Point z1 is in the proyection line of the point corresponding to (imgx,imgy) in the image 
         self.z1.header.stamp = stamp
+        # minus sign is due to camera coordinates
         self.z1.point.x = -((self.imgWidth / 2) - imgx) / self.fx
         self.z1.point.y = -((self.imgHeight / 2) - imgy) / self.fy
         
@@ -49,8 +50,8 @@ class CoordTransformer(object):
         paramLambda = origWorld.z / (origWorld.z - z1World.z)
         
         pos = Point()
-        pos.x = -(origWorld.x + paramLambda * (origWorld.x - z1World.x))
-        pos.y = -(origWorld.y + paramLambda * (origWorld.y - z1World.y))
+        pos.x = origWorld.x + paramLambda * (z1World.x - origWorld.x)
+        pos.y = origWorld.y + paramLambda * (z1World.y -origWorld.y)
         pos.z = 0
     
         return pos
@@ -60,15 +61,16 @@ class CoordTransformer(object):
 
         for l in lines:
             p1 = Point32()
-            p1.x = ((self.imgWidth / 2) - l[0]) / self.fx
-            p1.y = ((self.imgHeight / 2) - l[1]) / self.fy
-            p1.z = .001
+            # minus sign is due to camera coordinates
+            p1.x = -((self.imgWidth / 2) - l[0]) / self.fx
+            p1.y = -((self.imgHeight / 2) - l[1]) / self.fy
+            p1.z = 1
             points.append(p1)
             
             p1 = Point32()
-            p1.x = ((self.imgWidth / 2) - l[2]) / self.fx
-            p1.y = ((self.imgHeight / 2) - l[3]) / self.fy
-            p1.z = .001
+            p1.x = -((self.imgWidth / 2) - l[2]) / self.fx
+            p1.y = -((self.imgHeight / 2) - l[3]) / self.fy
+            p1.z = 1
             points.append(p1)
             
         pcl = PointCloud()
@@ -85,11 +87,11 @@ class CoordTransformer(object):
         groundPoints = []
         for z1World in transfPcl.points:
 #            print "z1World", z1World   
-            paramLambda = origWorld.z / (z1World.z-origWorld.z)
+            paramLambda = origWorld.z / (origWorld.z-z1World.z)
         
             pos = Point()
-            pos.x = (origWorld.x + paramLambda * (z1World.x - origWorld.x ))
-            pos.y = (origWorld.y + paramLambda * (z1World.y - origWorld.y ))
+            pos.x = origWorld.x + paramLambda * (z1World.x - origWorld.x )
+            pos.y = origWorld.y + paramLambda * (z1World.y - origWorld.y )
             pos.z = 0
             
             groundPoints.append(pos)
