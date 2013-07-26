@@ -90,6 +90,8 @@ catkin_package(
 ## in contrast to setup.py, you can choose the destination
  install(PROGRAMS
    scripts/detect_lines.py
+   src/morris_simulation/tests/grabImageAndShow.py
+   scripts/print_m4_pos.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
