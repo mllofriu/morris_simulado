@@ -1,6 +1,9 @@
 plotdata <- function(datafile, plotfile){
   d = read.table(datafile, header=T, quote="\"")
   names(d) = c('knowndistance', 'estdistance')
+  
+  # Scale knowndistance to meters
+  d['knowndistance'] = d['knowndistance']/1000
   summ <- summarySE(d, measurevar="estdistance", groupvars=c("knowndistance"))
 
   model <- summ[,"estdistance"] ~ summ[,"knowndistance"]
@@ -17,5 +20,5 @@ plotdata <- function(datafile, plotfile){
   dev.off()
 }
 
-plotdata('../45degree/data/distanceData.data', '45degree.plot')
-plotdata('../straight/data/distanceData.data', 'straight.plot')
+plotdata('../45degree/data/distanceData.data', '45degree.png')
+plotdata('../straight/data/distanceData.data', 'straight.png')
