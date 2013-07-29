@@ -8,8 +8,9 @@ plotdata <- function(datafile, plotfile){
 
   model <- summ[,"estdistance"] ~ summ[,"knowndistance"]
   png(plotfile)
-  plot(model, col='blue', xlab="real distance (m)", ylab="estimated distance (m)", type="p")
+  plot(model, col='blue', xlab="real distance (m)", ylab="estimated distance (m)", type="p", ylim=c(0,2.2), xlim=c(0,2.2), cex.lab=1.5, cex.axis=1.5)
   abline(lm(model), lty=5, col="red")
+  abline(coef=c(0,1), lty=5, col="blue")
   x = summ[,"knowndistance"]
   y = summ[,"estdistance"]
   sd = summ[,"sd"]
