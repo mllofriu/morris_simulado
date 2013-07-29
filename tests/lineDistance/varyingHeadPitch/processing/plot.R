@@ -7,8 +7,9 @@ plotdata <- function(datafile, plotfile){
   png(plotfile)
   plot(model, data=d, col='blue',
        xlab="head pitch (degrees)",
-       ylab="estimated distance (m)", type="p", ylim=c(0.2,.6))
+       ylab="estimated distance (m)", type="p", ylim=c(0.2,.6), cex.lab=1.5, cex.axis=1.5)
   abline(lm(model), lty=5, col="red")
+  abline(coef=c(0.35,0), lty=5, col="blue")
   x = summ[,"headPitch"]
   y = summ[,"estdistance"]
   sd = summ[,"sd"]
@@ -19,4 +20,4 @@ plotdata <- function(datafile, plotfile){
   dev.off()
 }
 
-plotdata('distanceData.data', 'lineDistancePitch.plot')
+plotdata('distanceData.data', 'lineDistancePitch.png')
