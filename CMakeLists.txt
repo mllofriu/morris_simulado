@@ -112,16 +112,27 @@ catkin_package(
 ## Mark other files for installation (e.g. launch and bag files, etc.)
  install(FILES
    	launch/morris.launch
+   	launch/morrisSim.launch
    	launch/cam.launch
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
  )
  
   install(FILES
    	config/bottomCamCalib.yml
-   	#config/bottomCamCalibSim.yml
+   	config/bottomCamCalibSim.yml
    	config/topCamCalib.yml
    	config/topCamCalibSim.yml
 	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config/
+ )
+ install(FILES
+   	patterns/m1.pat
+   	patterns/m2.pat
+   	patterns/m3.pat
+   	patterns/m4.pat
+   	patterns/love.pat
+   	patterns/floor_markers
+   	patterns/column_markers
+	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/patterns/
  )
 
 
