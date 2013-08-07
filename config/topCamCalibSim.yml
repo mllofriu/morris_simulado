@@ -1,20 +1,16 @@
-image_width: 1280
-image_height: 960
-camera_name: narrow_stereo/top
-camera_matrix:
-  rows: 3
-  cols: 3
-  data: [1142.713283, 0, 640.841058, 0, 1142.89717, 483.273962, 0, 0, 1]
-distortion_model: plumb_bob
-distortion_coefficients:
-  rows: 1
-  cols: 5
-  data: [0.001225, -0.008857, 0.000635, -0.000282, 0]
-rectification_matrix:
-  rows: 3
-  cols: 3
-  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
-projection_matrix:
-  rows: 3
-  cols: 4
-  data: [1141.359131, 0, 640.035646, 0, 0, 1141.672607, 483.173689, 0, 0, 0, 1, 0]
+!!python/unicode 'camera_matrix':
+  !!python/unicode 'data': !!python/tuple [568.6810541986912, 0.0, 314.0746657653468,
+    0.0, 567.2375570002646, 237.92569685357094, 0.0, 0.0, 1.0]
+!!python/unicode 'camera_name': narrow_stereo/top
+!!python/unicode 'distortion_coefficients':
+  !!python/unicode 'data': !!python/tuple [0.005647117087634718, -0.017751938308209744,
+    -0.002758399641894717, -0.0029574037740587866, 0.0]
+!!python/unicode 'distortion_model': plumb_bob
+!!python/unicode 'image_height': 480
+!!python/unicode 'image_width': 640
+!!python/unicode 'projection_matrix':
+  !!python/unicode 'data': !!python/tuple [568.345947265625, 0.0, 311.7746100396471,
+    0.0, 0.0, 567.5028686523438, 236.29575532342642, 0.0, 0.0, 0.0, 1.0, 0.0]
+!!python/unicode 'rectification_matrix':
+  !!python/unicode 'data': !!python/tuple [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0]
