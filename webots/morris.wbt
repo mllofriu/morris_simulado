@@ -1,0 +1,81 @@
+#VRML_SIM V6.0 utf8
+WorldInfo {
+  info [
+    "Description"
+    "Author: first name last name <e-mail>"
+    "Date: DD MMM YYYY"
+  ]
+}
+Viewpoint {
+  orientation 0.989519 0.138125 0.0421221 5.7472
+  position 0.208094 3.533 5.36037
+}
+Background {
+  skyColor [
+    0.4 0.7 1
+  ]
+}
+PointLight {
+  intensity 20
+  location -1.25 0.3 -1.25
+}
+PointLight {
+  intensity 20
+  location -1.25 0.3 1.25
+}
+PointLight {
+  intensity 20
+  location 1.25 0.3 -1.25
+}
+PointLight {
+  intensity 20
+  location 1.25 1 1.25
+}
+LandscapePainting {
+  translation 0.533748 0.05 -0.445588
+  rotation 0.999992 -0.0028376 -0.00283534 1.57001
+  mainTextureUrl [
+    "/opt/webots-for-nao/resources/projects/objects/indoor/appartment_structure/protos/textures/love.png"
+  ]
+}
+DirectionalLight {
+  direction 0 -1 0
+  intensity 0
+}
+SoccerField {
+}
+Nao_H25_V40 {
+  translation 0.581702 0.333193 0.0156296
+  rotation -0.610041 0.560446 0.560135 2.04619
+  synchronization TRUE
+  cameraWidth 1280
+  cameraHeight 960
+  bottomCameraWindowPosition 0.74124 0.176039
+  cameraPixelSize 0.15
+}
+Wall {
+  translation 1.216 -8.49367e-16 -0.087366
+  rotation 0 1 0 1.5708
+  mainTextureUrl [
+    "textures/m1.png"
+  ]
+}
+Wall {
+  translation 0.0517686 6.69484e-15 -1.16552
+  mainTextureUrl [
+    "textures/m2.png"
+  ]
+}
+Wall {
+  translation -1.21909 2.56531e-14 -0.0160878
+  rotation 0 1 0 1.5708
+  mainTextureUrl [
+    "textures/m3.png"
+  ]
+}
+Wall {
+  translation -0.0494951 7.27933e-15 1.16767
+  mainTextureUrl [
+    "textures/m4.png"
+  ]
+}

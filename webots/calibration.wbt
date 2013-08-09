@@ -1,0 +1,60 @@
+#VRML_SIM V6.0 utf8
+WorldInfo {
+  info [
+    "Description"
+    "Author: first name last name <e-mail>"
+    "Date: DD MMM YYYY"
+  ]
+}
+Viewpoint {
+  orientation 0.322837 -0.853273 -0.409514 4.45215
+  position 8.00074 11.7971 -2.68862
+}
+Background {
+  skyColor [
+    0.4 0.7 1
+  ]
+}
+PointLight {
+  intensity 13
+  location 0 0.3 0
+}
+DirectionalLight {
+  direction 0 -1 0
+  intensity 0
+}
+SoccerField {
+}
+Nao_H25_V40 {
+  translation -1.25515 0.332851 -0.73301
+  rotation 0.0131868 0.707124 0.706967 -3.13211
+  cameraWidth 1280
+  cameraHeight 960
+  cameraPixelSize 0.25
+}
+Wall {
+  translation 2.58716 -8.49367e-16 0.0271666
+  rotation 0 1 0 1.5708
+  mainTextureUrl [
+    "textures/m1.png"
+  ]
+}
+Wall {
+  translation -0.0194035 6.69484e-15 -2.47726
+  mainTextureUrl [
+    "textures/m2.png"
+  ]
+}
+Wall {
+  translation -2.65636 0.5 -1.10869
+  rotation 0.0814223 -0.814222 -0.574816 2.0944
+  mainTextureUrl [
+    "/home/ludo/Desktop/OpenCV_Chessboard.png"
+  ]
+}
+Wall {
+  translation -0.1165 7.27933e-15 2.45629
+  mainTextureUrl [
+    "textures/m4.png"
+  ]
+}
