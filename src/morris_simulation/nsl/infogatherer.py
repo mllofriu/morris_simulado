@@ -1,4 +1,4 @@
-#!/usr/bin/env python  
+    #!/usr/bin/env python  
 '''
 Created on May 22, 2013
 
@@ -26,48 +26,33 @@ class InfoGatherer(object):
 
 
     def __init__(self):
-        # Listen to lines for affordances
-        sub = message_filters.Subscriber("/lines", Lines)
-        self.linesCache = message_filters.Cache(sub, 200)
         # Listen to visualization_markers for markers
         sub = message_filters.Subscriber("/visualization_marker", Marker)
         self.markersCache = message_filters.Cache(sub, 200)
         
         self.mover = JointMover()
+        
         # Fix pitch
         self.mover.move("HeadPitch", [.7], .5)
         rospy.loginfo( "Gatherer initiated")
         
         
     def gather(self):
-        movements = [[.5],[-.5],[0]]
-        lines = []
+        
         markers = []
-        for m in movements:
-            self.mover.move("HeadYaw", m, .5)
-            rospy.sleep(.5)
-            # Collect messages away from movement
-            start = rospy.Time.now()
-            for i in range(5):
-                self.linesCache.waitForTimedMessage(start)
-                # Cant wait for marker Messages as are published only on discovery
-                #self.markersCache.waitForTimedMessage(start)
-            lines += self.linesCache.getInterval(start, rospy.Time.now())
-            markers += self.markersCache.getInterval(start, rospy.Time.now())
+        # Collect messages away from movement
+        start = rospy.Time.now()
+        for i in range(5):
+            self.linesCache.waitForTimedMessage(start)
+            # Cant wait for marker Messages as are published only on discovery
+            #self.markersCache.waitForTimedMessage(start)
+        lines += self.linesCache.getInterval(start, rospy.Time.now())
+        markers += self.markersCache.getInterval(start, rospy.Time.now())
 
-#        print lines
-#        print markers
-        # Filter out the lines from the markerArray
-        onlyLines = []
-        for d in lines:
-            onlyLines += d.lines 
-        
-        aff = AffordanceCalc().calcAffordances(onlyLines)
-        
         print "Markers", markers
         marks = self.avgMarkers(markers)
         
-        return aff, marks
+        return marks
     
     def avgMarkers(self, visMarkers):
         markerSamples = {}
