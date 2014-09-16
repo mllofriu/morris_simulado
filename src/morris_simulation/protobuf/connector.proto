@@ -1,0 +1,30 @@
+message Command {
+  enum CommandType {
+    doAction = 0;
+    rotate = 1;
+    getInfo = 2;
+    startRobot = 3;
+    stopRobot = 4;
+  }
+  optional CommandType type = 1 [default = getInfo];
+  
+  optional int32 angle = 2;
+}
+
+message Landmark {
+	required int32 id = 1;
+	required float x = 2;
+	required float y = 3;
+	required float z = 4;
+}
+
+message Affordances {
+	repeated bool aff = 1;
+}
+
+message Response {
+	required bool ok = 1;
+	repeated Landmark landmarks = 2;
+	optional Affordances affs = 3;
+}
+		
