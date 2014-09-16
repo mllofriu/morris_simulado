@@ -53,6 +53,7 @@ class InfoGatherer(object):
 	sonarLeft += self.sonarLeftCache.query(now - rospy.Duration(1), now)
 	sonarRight += self.sonarRightCache.query(now - rospy.Duration(1), now)
 
+	print sonarRight
        	# print "Markers", markers
         marks = self.avgMarkers(markers)
 

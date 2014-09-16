@@ -12,6 +12,9 @@ import socket
 from morris_simulation.nsl import InfoGatherer
 from morris_simulation.protobuf import connector_pb2 as proto
 
+from naoqi import ALProxy
+
+from google.protobuf.internal import encoder
 
 class NSLConnector(object):
     '''
@@ -28,8 +31,10 @@ class NSLConnector(object):
         self.markers = None
         self.afforances = None
         
+	self.infoGatherer = InfoGatherer();
+        
         # Open the socket 
-        s = socket.socket()         # Create a socket object
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # Create a socket object
         s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # Send every packet individually
 #        host = socket.gethostname() # Get local machine name
 #        print host
@@ -41,6 +46,17 @@ class NSLConnector(object):
 #        while True:
         self.con, addr = s.accept()     # Establish connection with client.
 #        self.processConnection()
+	try:
+	        self.motionProxy = ALProxy("ALMotion", '127.0.0.1', 9559)
+	except Exception, e:
+		print "Could not create proxy to ALMotion"
+		print "Error was: ", e
+	try:
+	        self.postureProxy = ALProxy("ALRobotPosture", '127.0.0.1', 9559)
+    	except Exception, e:
+        	print "Could not create proxy to ALRobotPosture"
+        	print "Error was: ", e
+	
 
     def doAction(self, angle):
         print "Command",angle
@@ -58,10 +74,13 @@ class NSLConnector(object):
         
     def startRobot(self):
         print "Start Robot"
-        self.pilot = Pilot()
-        self.infoGatherer = InfoGatherer();
+
+	# Send NAO to Pose Init
+	self.motionProxy.setSmartStiffnessEnabled(True)
+    	self.postureProxy.goToPosture("StandInit", 0.5)	
+
         # Send Ok msg
-        okMsg = rp.Response()
+        okMsg = proto.Response()
         okMsg.ok = True;
         serial = okMsg.SerializeToString()
         print "Largo", len(serial)
@@ -70,68 +89,61 @@ class NSLConnector(object):
         print "ok sent"
 #                con.flush()
 
-    def getAffordances(self):
-        print "Affordances"
+    def getInfo(self):
         if not self.validInformation:
-            self.affordances, self.markers = self.infoGatherer.gather()
+            self.markers, self.affordances = self.infoGatherer.gather()
+	    print self.markers, self.affordances
             self.validInformation = True
-        print "Affordances obtained", self.affordances
-        self.sendAffordances(self.affordances,self.con)
-        print "affordances sent"
-                
-    def isThereFood(self):
-        print "Is there food?"
-        
-    def getMarcas(self):
-        print "GetMarcas"
-        if not self.validInformation:
-            self.affordances, self.markers = self.infoGatherer.gather()
-            self.validInformation = True
-        
+	                
+	resp = proto.Response()
+	resp.ok = True
+	for b in self.affordances:
+		resp.affs.aff.append(b)
+	for lm in self.markers:
+		lm = proto.Landmark()
+		lm.id = lm[0]
+		lm.x = lm[1]
+		lm.y = lm[2]
+		lm.z = lm[3]
+		resp.landmarks.append(lm)
+      
+	print "Sending info"  
+	data = resp.SerializeToString()
+        self.con.sendall(encoder._VarintBytes(len(data)) + data)
+	print "Info sent"
+     
     def processConnection(self):
-        cmd = rp.Command()
+        cmd = proto.Command()
         text = self.con.recv(4096)
         cmd.ParseFromString(text)
         
-        while cmd.command != rp.Command.close:
-            if cmd.command == rp.Command.doAction or cmd.command == rp.Command.rotate :
+        while cmd.type != proto.Command.stopRobot:
+            if cmd.type == proto.Command.doAction or cmd.type == proto.Command.rotate :
                 self.doAction(cmd.angle)
-            elif cmd.command == rp.Command.startRobot:
+            elif cmd.type == proto.Command.startRobot:
                 self.startRobot()
-            elif cmd.command == rp.Command.getAffordances:
-                self.getAffordances()
-            elif cmd.command == rp.Command.isFood:
-                self.isThereFood()
-            elif cmd.command == rp.Command.getMarcas:
-                self.getMarcas()
-            
-            
+            elif cmd.type == proto.Command.getInfo:
+                self.getInfo()
             
             text = self.con.recv(4096)
+            cmd = proto.Command()
             cmd.ParseFromString(text)
-        
-        SitDown()
+       
+    	self.postureProxy.goToPosture("Crouch", 0.5)	
+	self.motionProxy.rest()
+
         # Send Ok msg
-        okMsg = rp.Response()
-        okMsg.ok = True;
-        self.con.send(okMsg.SerializeToString())
+        #okMsg = proto.Response()
+        #okMsg.ok = True;
+        #self.con.send(okMsg.SerializeToString())
     
-    def sendAffordances(self, affordances, con):    
-        affMsg = rp.Affordances()
-        for af in affordances:
-            affMsg.affordance.append(af)
-        
-        con.sendall(affMsg.SerializeToString())
-        
-    def sendMarkers(self, markers, con):
-        affMsg = rp.Marcas()
-    
+        self.con.close()
+
     def __del__(self):
         self.con.close()
         
 if __name__ == "__main__":
     nslC = NSLConnector()
     nslC.processConnection()
-    nslC.getAffordances()
     
     
