@@ -1,3 +1,5 @@
+option java_package = "edu.usf.ratsim.protobuf";
+
 message Command {
   enum CommandType {
     doAction = 0;
