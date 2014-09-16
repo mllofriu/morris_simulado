@@ -1,0 +1,17 @@
+<launch>
+	<include file="$(find nao_driver)/launch/vision.launch"/>
+ <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+	<param name="robot_description" command="$(find xacro)/xacro.py $(find nao_description)/urdf/nao_robot_v4.urdf.xacro" />
+
+<node pkg="nao_driver" type="nao_sensors.py" name="nao_sensors" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+	<node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" >   
+  </node>
+	<node name="ar_pose" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
+		<param name="marker_pattern_list" type="string" value="$(find morris_simulation)/patterns/column_markers"/>
+		<param name="threshold" type="int" value="100"/>
+		<param name="publish_tf" type="bool" value="true"/>
+		<remap to="/nao_cam/top/image_raw" from="/usb_cam/image_raw"/>
+		<remap to="/nao_cam/top/camera_info" from="/usb_cam/camera_info"/> 
+	</node>
+</launch>
