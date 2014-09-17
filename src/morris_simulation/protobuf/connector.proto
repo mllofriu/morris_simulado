@@ -1,4 +1,4 @@
-option java_package = "edu.usf.ratsim.protobuf";
+option java_package = "edu.usf.ratsim.robot.naorobot.protobuf";
 
 message Command {
   enum CommandType {
@@ -10,7 +10,7 @@ message Command {
   }
   optional CommandType type = 1 [default = getInfo];
   
-  optional int32 angle = 2;
+  optional float angle = 2;
 }
 
 message Landmark {

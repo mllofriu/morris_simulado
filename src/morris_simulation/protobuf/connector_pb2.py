@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='connector.proto',
   package='',
-  serialized_pb='\n\x0f\x63onnector.proto\"\x9a\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x05\"S\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"P\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.AffordancesB\x19\n\x17\x65\x64u.usf.ratsim.protobuf')
+  serialized_pb='\n\x0f\x63onnector.proto\"\x9a\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x02\"S\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"P\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.AffordancesB(\n&edu.usf.ratsim.robot.naorobot.protobuf')
 
 
 
@@ -67,7 +67,7 @@ _COMMAND = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='angle', full_name='Command.angle', index=1,
-      number=2, type=5, cpp_type=1, label=1,
+      number=2, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -240,5 +240,5 @@ class Response(_message.Message):
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), '\n\027edu.usf.ratsim.protobuf')
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), '\n&edu.usf.ratsim.robot.naorobot.protobuf')
 # @@protoc_insertion_point(module_scope)
