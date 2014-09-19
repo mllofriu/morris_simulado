@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
 			pitch = motionProxy.getAngles("HeadPitch",True)[0]
 			# if im not trying to go up when already looking up
-			if not (pitch < -.3 and angley < 0):
+			if not ((pitch > .3 and angley > 0) or (pitch < -.3 and angley < 0)):
 				moveJoint ("HeadPitch",motionProxy,angley, vely)
 				# control de yaw = P(pos.x)
 		else :
