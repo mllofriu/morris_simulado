@@ -24,7 +24,7 @@ class InfoGatherer(object):
     '''
     classdocs
     '''
-    close_thrs = .25
+    close_thrs = .5
 
     def __init__(self):
         # Listen to visualization_markers for markers
@@ -53,7 +53,7 @@ class InfoGatherer(object):
 	sonarLeft += self.sonarLeftCache.query(now - rospy.Duration(1), now)
 	sonarRight += self.sonarRightCache.query(now - rospy.Duration(1), now)
 
-	print sonarRight
+	#print sonarRight
        	# print "Markers", markers
         marks = self.avgMarkers(markers)
 
