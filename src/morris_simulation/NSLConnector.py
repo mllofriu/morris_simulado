@@ -35,18 +35,18 @@ class NSLConnector(object):
         self.infoGatherer = InfoGatherer();
         
         # Open the socket 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # Create a socket object
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
         s.settimeout(None)
-        s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # Send every packet individually
+        s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # Send every packet individually
 #        host = socket.gethostname() # Get local machine name
 #        print host
-        port = 12345                # Reserve a port for your service.
-        s.bind(("0.0.0.0", port))        # Bind to the por
-        rospy.loginfo( "NSLConnector initialized")
+        port = 12345  # Reserve a port for your service.
+        s.bind(("0.0.0.0", port))  # Bind to the por
+        rospy.loginfo("NSLConnector initialized")
         
-        s.listen(5)                 # Now wait for client connection.
+        s.listen(5)  # Now wait for client connection.
 #        while True:
-        self.con, addr = s.accept()     # Establish connection with client.
+        self.con, addr = s.accept()  # Establish connection with client.
 #        self.processConnection()
         try:
             self.motionProxy = ALProxy("ALMotion", '127.0.0.1', 9559)
@@ -61,7 +61,7 @@ class NSLConnector(object):
     
 
     def doAction(self, angle):
-        print "Command",angle
+        print "Command", angle
         if angle == 0:
             x = .4
             y = 0
@@ -70,12 +70,13 @@ class NSLConnector(object):
         else:
             x = 0
             y = 0
-            t = angle/2
+            t = angle / 2
             f = .5 
         self.motionProxy.setWalkTargetVelocity(x, y, t, f)  
         rospy.sleep(2)
+        self.motionProxy.setWalkTargetVelocity(0, 0, 0, 0)  
         self.validInformation = False
-        
+       	rospy.sleep(5) 
         # Send Ok msg
         okMsg = proto.Response()
         okMsg.ok = True;
@@ -87,12 +88,7 @@ class NSLConnector(object):
         # Send NAO to Pose Init
         self.motionProxy.setSmartStiffnessEnabled(True)
         self.postureProxy.goToPosture("StandInit", 0.5) 
-
-	names      = "HeadPitch"
-    	angleLists = .3
-    	timeLists  = .5
-    	isAbsolute = True
-    	self.motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
+        
         # Send Ok msg
         okMsg = proto.Response()
         okMsg.ok = True;
@@ -101,7 +97,7 @@ class NSLConnector(object):
     def getInfo(self):
         if not self.validInformation:
             self.markers, self.affordances = self.infoGatherer.gather()
-            #self.validInformation = True
+            # self.validInformation = True
 
         resp = proto.Response()
         resp.ok = True
@@ -110,19 +106,19 @@ class NSLConnector(object):
     
         for lm in self.markers:
             try:
-                self.tf_listener.waitForTransform("/base_footprint","/M"  + str(lm[0] + 1), rospy.Time(), rospy.Duration(3))
-                (t,rot) = self.tf_listener.lookupTransform("/base_footprint","/M" + str(lm[0] + 1), rospy.Time(0))
+                self.tf_listener.waitForTransform("/base_footprint", "/M" + str(lm[0] + 1), rospy.Time(), rospy.Duration(3))
+                (t, rot) = self.tf_listener.lookupTransform("/base_footprint", "/M" + str(lm[0] + 1), rospy.Time(0))
             
                 plm = resp.landmarks.add()
                 # lm = (id, x, y, z) - x, y and z are not used since the transform is published
                 plm.id = lm[0]
-                #self.tf_listener.waitForTransform("/base_footprint","/M"  + str(plm.id + 1), now, rospy.Duration(.3))
+                # self.tf_listener.waitForTransform("/base_footprint","/M"  + str(plm.id + 1), now, rospy.Duration(.3))
 		# Transform coordinates from robot to model: x is the same, z is y and y = 0 (height)
                 plm.x = t[0]
-                plm.y = 0 #t[1]
-                plm.z = -t[1] #t[2]
+                plm.y = 0  # t[1]
+                plm.z = -t[1]  # t[2]
 		print "Marca", (t[0], -t[1]) 
-                #resp.landmarks.append(lm)
+                # resp.landmarks.append(lm)
             except:
                 rospy.loginfo("Exception while trying to lookup transform") 
 
@@ -155,9 +151,9 @@ class NSLConnector(object):
         self.motionProxy.rest()
 
         # Send Ok msg
-        #okMsg = proto.Response()
-        #okMsg.ok = True;
-        #self.con.send(okMsg.SerializeToString())
+        # okMsg = proto.Response()
+        # okMsg.ok = True;
+        # self.con.send(okMsg.SerializeToString())
     
         self.con.close()
 
