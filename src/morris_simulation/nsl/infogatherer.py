@@ -35,7 +35,7 @@ class InfoGatherer(object):
         sub = message_filters.Subscriber("/nao/sonar_right", Range)
         self.sonarRightCache = message_filters.Cache(sub, 5)
 
-	#rospy.sleep(5.)        
+    #rospy.sleep(5.)        
         
         # Fix pitch
 #        self.mover.move("HeadPitch", [.7], .5)
@@ -45,29 +45,31 @@ class InfoGatherer(object):
     def gather(self):
         
         markers = []
-	sonarLeft = []
-	sonarRight = []
+        sonarLeft = []
+        sonarRight = []
         # Collect messages away from movement
-	now = rospy.Time.now()
+        now = rospy.Time.now()
         markers += self.markersCache.query(now - rospy.Duration(1), now)
-	sonarLeft += self.sonarLeftCache.query(now - rospy.Duration(1), now)
-	sonarRight += self.sonarRightCache.query(now - rospy.Duration(1), now)
+        sonarLeft += self.sonarLeftCache.query(now - rospy.Duration(1), now)
+        sonarRight += self.sonarRightCache.query(now - rospy.Duration(1), now)
 
-	#print sonarRight
-       	# print "Markers", markers
+    #print sonarRight
+           # print "Markers", markers
         marks = self.avgMarkers(markers)
 
-	aff = self.affordances(sonarLeft, sonarRight)
+        aff = self.affordances(sonarLeft, sonarRight, marks)
         
         return (marks, aff)
 
-    def affordances(self, sonarLeft, sonarRight):
-	# If any value less than threshold
-	somethingLeft = any(map(lambda msg : msg.range <= self.close_thrs, sonarLeft))
-	somethingRight = any(map(lambda msg : msg.range <= self.close_thrs, sonarRight))
-	# If both have something, there is something front
-	somethingFront = somethingLeft and somethingRight
-	return [not somethingLeft, not somethingFront, not somethingRight]
+    def affordances(self, sonarLeft, sonarRight, marks):
+        # If there are landmarks, ignore affordances
+        noMarks = len(marks) == 0
+        # If any value less than threshold
+        somethingLeft = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarLeft))
+        somethingRight = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarRight))
+        # If both have something, there is something front
+        somethingFront = somethingLeft and somethingRight
+        return [not somethingLeft, not somethingFront, not somethingRight]
     
     def avgMarkers(self, visMarkers):
         markerSamples = {}
