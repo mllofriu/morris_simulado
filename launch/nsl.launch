@@ -48,7 +48,7 @@
 		<remap to="/camera/camera_info" from="/usb_cam/camera_info"/>
   </node>
   
-   <node name="connector" pkg="morris_simulation" type="NSLConnector.py" args="" required="true" output="screen" /> 
+   <!-- <node name="connector" pkg="morris_simulation" type="NSLConnector.py" args="" required="true" output="screen" /> 
 
-    <node name="headMover" pkg="morris_simulation" type="headMarkerFollower.py" />    
+    <node name="headMover" pkg="morris_simulation" type="headMarkerFollower.py" />    -->
 </launch>

@@ -26,7 +26,14 @@ if __name__ == '__main__':
         motionProxy = ALProxy("ALMotion", '127.0.0.1', 9559)
     except Exception, e:
         print "Could not create proxy"
-
+        
+    try:
+        ledProxy = ALProxy("ALLeds", '127.0.0.1', 9559)
+    except Exception,e:
+        print "Could not create proxy to ALLeds"
+        print "Error was: ",e
+    ledProxy.off("FaceLeds")
+    
     # Init stiffness and move head to good position
     motionProxy.setStiffnesses("Head", .5)
     motionProxy.setSmartStiffnessEnabled(True)
@@ -40,6 +47,9 @@ if __name__ == '__main__':
     r = rospy.Rate(5) 
     goingLeft = True
     while not rospy.is_shutdown():
+#     	pitch = motionProxy.getAngles("HeadPitch",True)[0]
+#     	if abs(pitch - -.4) > .1:
+# 	        moveJoint ("HeadPitch",motionProxy,-.4, .5)
         # Obtengo los del ultimo seg
         now = rospy.Time.now()
         markers = markersCache.query(now - rospy.Duration(1), now)
@@ -47,32 +57,21 @@ if __name__ == '__main__':
         numMarkers = len(markers)
         # Si hay alguno
         if (numMarkers >= 1):
-            print "Vi hace un segundo por lo menos"
+            ledProxy.on("FaceLeds")
+#             print "Vi hace un segundo por lo menos"
             # Posicion del ultimo -> pos
             lastM = markers[numMarkers - 1]
             x = lastM.pose.position.x
-            y = lastM.pose.position.y
-            print x, y
             px = x / .40
-            py = y / .40
             anglex = -math.copysign(.05 * abs(px), px)
-            angley = math.copysign(.1 * abs(py), py)
             velx = abs(px) * 0.05
-            vely = abs(py) * 0.4
             moveJoint ("HeadYaw", motionProxy, anglex, velx)
-
-            # pitch = motionProxy.getAngles("HeadPitch",True)[0]
-            # if im not trying to go up when already looking up
-            # if not ((pitch > .1 and angley > 0) or (pitch < -.3 and angley < 0)):
-            #     moveJoint ("HeadPitch",motionProxy,angley, vely)
-            # else :
-            #     moveJoint ("HeadPitch",motionProxy,0.0, 1.0)
-                # control de yaw = P(pos.x)
         else :
-            print "No veo!"
+            ledProxy.off("FaceLeds")
+#             print "No veo!"
             yaw = motionProxy.getAngles("HeadYaw", True)[0]
-            print yaw
-            print goingLeft
+#             print yaw
+#             print goingLeft
             if (goingLeft):
                 if (yaw < 1):
                     anglex = .2
@@ -80,12 +79,12 @@ if __name__ == '__main__':
                     anglex = -.2
                     goingLeft = False
             else:
-                if (yaw > .2):
+                if (yaw > -1):
                     anglex = -.2
                 else:
                     anglex = .2
                     goingLeft = True
-            print anglex
+#             print anglex
             moveJoint ("HeadYaw", motionProxy, anglex, .02)
             # Si no hay ninguno
                 # Scan

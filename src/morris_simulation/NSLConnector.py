@@ -53,6 +53,7 @@ class NSLConnector(object):
         except Exception, e:
             print "Could not create proxy to ALMotion"
             print "Error was: ", e
+            
         try:
             self.postureProxy = ALProxy("ALRobotPosture", '127.0.0.1', 9559)
         except Exception, e:
@@ -63,20 +64,23 @@ class NSLConnector(object):
     def doAction(self, angle):
         print "Command", angle
         if angle == 0:
-            x = .4
+            x = .05
             y = 0
             t = 0
             f = .5
         else:
             x = 0
             y = 0
-            t = angle / 2
+            t = angle 
             f = .5 
-        self.motionProxy.setWalkTargetVelocity(x, y, t, f)  
-        rospy.sleep(2)
+#         self.motionProxy.setWalkTargetVelocity(x, y, t, f)  
+#         if angle == 0:
+#             rospy.sleep(2) 
+#         else :
+#             rospy.sleep(2)
+        self.motionProxy.moveTo(x, y, t, [["MaxStepFrequency", .8], ["TorsoWy", .122], ["MaxStepX", 0.2]])
         self.motionProxy.setWalkTargetVelocity(0, 0, 0, 0)  
         self.validInformation = False
-       	rospy.sleep(5) 
         # Send Ok msg
         okMsg = proto.Response()
         okMsg.ok = True;
@@ -88,6 +92,12 @@ class NSLConnector(object):
         # Send NAO to Pose Init
         self.motionProxy.setSmartStiffnessEnabled(True)
         self.postureProxy.goToPosture("StandInit", 0.5) 
+        
+        names = "HeadPitch"
+        angleLists = -.4
+        timeLists = .5
+        isAbsolute = True
+        self.motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
         
         # Send Ok msg
         okMsg = proto.Response()
