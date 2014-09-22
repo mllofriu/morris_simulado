@@ -1,0 +1,35 @@
+<launch>
+	<arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+	<arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+	
+	<node pkg="nao_sensors" type="nao_camera_both.py" name="nao_camera_both" respawn="true"
+		args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen">
+		<param name="camera_switch" type="int" value="1"/>
+		<param name="fps" type="int" value="5"/>
+		<!-- Image quality constants k960p = 3 # 1280*960 k4VGA = 3 # 1280*960 kVGA = 2 #
+			640*480 kQVGA = 1 # 320*240 kQQVGA = 0 # 160*120 -->
+		<param name="quality" type="int" value="0"/>
+		<param name="topCamParams" type="string" value="package://nao_sensors/share/nao_camera_top_160x120.yaml"/>
+		<param name="bottomCamParams" type="string" value="package://nao_sensors/share/nao_camera_bottom_160x120.yaml"/>
+	</node>
+	
+	<node pkg="nao_driver" type="nao_sensors.py" name="nao_sensors" required="true" args="--pip=$(arg
+		nao_ip) --pport=$(arg nao_port)" output="screen"/>
+	
+	<node pkg="nao_description" type="base_footprint" name="base_footprint" />
+	
+	<param name="robot_description" command="$(find xacro)/xacro.py $(find nao_description)/urdf/nao_robot_v4.urdf.xacro"
+		/>
+	
+	<node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"
+		/>
+	
+	
+	<node name="ar_pose" pkg="ar_pose" type="ar_multi" respawn="false" output="screen">
+		<param name="marker_pattern_list" type="string" value="$(find morris_simulation)/patterns/column_markers"/>
+		<param name="threshold" type="int" value="100"/>
+		<param name="publish_tf" type="bool" value="true"/>
+		<remap to="/nao_cam/top/image_raw" from="/usb_cam/image_raw"/>
+		<remap to="/nao_cam/top/camera_info" from="/usb_cam/camera_info"/>
+	</node>
+</launch>
