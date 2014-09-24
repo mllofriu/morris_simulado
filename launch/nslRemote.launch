@@ -32,4 +32,10 @@
 		<remap to="/nao_cam/top/image_raw" from="/usb_cam/image_raw"/>
 		<remap to="/nao_cam/top/camera_info" from="/usb_cam/camera_info"/>
 	</node>
+	
+	<node name="visual_affordances" pkg="morris_simulation" type="visual_affordances.py" args="" required="true" output="screen" > 
+		<remap to="/nao_cam/bottom/image_raw" from="image"/>
+	</node>
+	<node name="connector" pkg="morris_simulation" type="NSLConnector.py" args="" required="true" output="screen" /> 
+	
 </launch>
