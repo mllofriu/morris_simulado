@@ -64,7 +64,7 @@ if __name__ == '__main__':
             x = lastM.pose.position.x
             px = x / .40
             anglex = -math.copysign(.1 * abs(px), px)
-            velx = 1#abs(px) * 0.1
+            velx = abs(px) * 0.1
             moveJoint ("HeadYaw", motionProxy, anglex, velx)
         else :
             ledProxy.off("FaceLeds")

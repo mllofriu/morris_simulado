@@ -4,7 +4,7 @@ project(morris_simulation)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS cv_bridge geometry_msgs rospy sensor_msgs std_msgs std_srvs tf visualization_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS cv_bridge geometry_msgs rospy sensor_msgs std_msgs std_srvs tf visualization_msgs message_generation romina2)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS cv_bridge geometry_msgs rospy sensor_msg
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
+   Affordances.msg
    Line.msg
    Lines.msg
 )
@@ -89,6 +90,7 @@ catkin_package(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
  install(PROGRAMS
+   src/morris_simulation/tests/affordances.py
    scripts/detect_lines.py
    src/morris_simulation/tests/grabImageAndShow.py
    scripts/print_m4_pos.py
@@ -108,6 +110,7 @@ catkin_package(
 #   FILES_MATCHING PATTERN "*.h"
 #   PATTERN ".svn" EXCLUDE
 # )
+
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
  install(FILES

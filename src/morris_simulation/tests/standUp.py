@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 '''Walk: Small example to make Nao walk'''
 import sys
-import motion
 import time
 from naoqi import ALProxy
 
@@ -18,7 +17,7 @@ class StandUp(object):
 
 
     def __init__(self):
-        robotIP = "127.0.0.1"
+        robotIP = "elvira"
         '''
         Constructor
         '''
@@ -41,11 +40,16 @@ class StandUp(object):
         # Send NAO to Pose Init
         postureProxy.goToPosture("Stand", .5)
     
+        names = "HeadPitch"
+        angleLists = .2
+        timeLists = .5
+        isAbsolute = True
+        motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
 #        postureProxy.goToPosture("Stand", 4)
         #####################
         ## Enable arms control by Walk algorithm
         #####################
-        motionProxy.setWalkArmsEnabled(False, False)
+        #motionProxy.setWalkArmsEnabled(False, False)
 
 
 

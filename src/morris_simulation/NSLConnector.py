@@ -49,16 +49,18 @@ class NSLConnector(object):
         self.con, addr = s.accept()  # Establish connection with client.
 #        self.processConnection()
         try:
-            self.motionProxy = ALProxy("ALMotion", '127.0.0.1', 9559)
+            self.motionProxy = ALProxy("ALMotion", 'elvira', 9559)
         except Exception, e:
             print "Could not create proxy to ALMotion"
             print "Error was: ", e
+            exit(1)
             
         try:
-            self.postureProxy = ALProxy("ALRobotPosture", '127.0.0.1', 9559)
+            self.postureProxy = ALProxy("ALRobotPosture", 'elvira', 9559)
         except Exception, e:
             print "Could not create proxy to ALRobotPosture"
             print "Error was: ", e
+            exit(1)
     
 
     def doAction(self, angle):
@@ -74,11 +76,11 @@ class NSLConnector(object):
             t = angle 
             f = .5 
 #         self.motionProxy.setWalkTargetVelocity(x, y, t, f)  
-#         if angle == 0:
-#             rospy.sleep(2) 
-#         else :
-#             rospy.sleep(2)
-        self.motionProxy.moveTo(x, y, t, [["MaxStepFrequency", .8], ["TorsoWy", .122], ["MaxStepX", 0.2]])
+        if angle == 0:
+            rospy.sleep(2) 
+        else :
+            rospy.sleep(2)
+        self.motionProxy.moveTo(x, y, t, [["MaxStepFrequency", .8], ["MaxStepX", 0.02]])
         self.motionProxy.setWalkTargetVelocity(0, 0, 0, 0)  
         self.validInformation = False
         # Send Ok msg
@@ -94,8 +96,8 @@ class NSLConnector(object):
         self.postureProxy.goToPosture("StandInit", 0.5) 
         
         names = "HeadPitch"
-        angleLists = -.4
-        timeLists = .5
+        angleLists = [.1, -.2]
+        timeLists = [.5, 1]
         isAbsolute = True
         self.motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
         
@@ -111,6 +113,7 @@ class NSLConnector(object):
 
         resp = proto.Response()
         resp.ok = True
+        print(self.affordances)
         for b in self.affordances:
             resp.affs.aff.append(b)
     
@@ -135,10 +138,10 @@ class NSLConnector(object):
         self.sendMsg(resp)
 
     def sendMsg(self, resp):
-        print "Sending info"  
+        #print "Sending info"  
         data = resp.SerializeToString()
         self.con.sendall(encoder._VarintBytes(len(data)) + data)
-        print "Info sent"
+        #print "Info sent"
 
     def processConnection(self):
         cmd = proto.Command()
@@ -151,7 +154,9 @@ class NSLConnector(object):
             elif cmd.type == proto.Command.startRobot:
                 self.startRobot()
             elif cmd.type == proto.Command.getInfo:
+                print "Getting info"
                 self.getInfo()
+                print "Getting info done"
             
             text = self.con.recv(4096)
             cmd = proto.Command()

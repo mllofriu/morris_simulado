@@ -6,19 +6,12 @@ Created on May 22, 2013
 '''
 
 
-import roslib; roslib.load_manifest('morris_simulation')
 import rospy
 
 
-#from affordances import Affordances
-#from morris_simulation.perception import AffordanceCalc
-#from MarkerCalc import MarkerCalc
 from visualization_msgs.msg import  Marker
-#from morris_simulation.msg import Lines
-#from moveJoint import JointMover
-from naoqi import ALProxy
 import message_filters
-from sensor_msgs.msg import Range
+from morris_simulation.msg import Affordances
 
 class InfoGatherer(object):
     '''
@@ -28,48 +21,43 @@ class InfoGatherer(object):
 
     def __init__(self):
         # Listen to visualization_markers for markers
-        sub = message_filters.Subscriber("/visualization_marker", Marker)
-        self.markersCache = message_filters.Cache(sub, 20)
-        sub = message_filters.Subscriber("/nao/sonar_left",Range )
-        self.sonarLeftCache = message_filters.Cache(sub, 5)
-        sub = message_filters.Subscriber("/nao/sonar_right", Range)
-        self.sonarRightCache = message_filters.Cache(sub, 5)
-
-    #rospy.sleep(5.)        
-        
-        # Fix pitch
-#        self.mover.move("HeadPitch", [.7], .5)
-        rospy.loginfo( "Gatherer initiated")
-        
+        sub = message_filters.Subscriber("/ar_pose/visualization_marker", Marker)
+        self.markersCache = message_filters.Cache(sub, 1)
+        sub = message_filters.Subscriber("/affordances",Affordances )
+        self.affordances = message_filters.Cache(sub, 1)
+        rospy.loginfo( "Gatherer initiated")        
+        rospy.sleep(1);
         
     def gather(self):
-        
+        affs = []
         markers = []
-        sonarLeft = []
-        sonarRight = []
         # Collect messages away from movement
         now = rospy.Time.now()
-        markers += self.markersCache.query(now - rospy.Duration(1), now)
-        sonarLeft += self.sonarLeftCache.query(now - rospy.Duration(1), now)
-        sonarRight += self.sonarRightCache.query(now - rospy.Duration(1), now)
+        markers += self.markersCache.getInterval(now - rospy.Duration(1), now)
+        affs += self.affordances.getInterval(now - rospy.Duration(1), now)
+        while len(affs) == 0:
+            rospy.sleep(.5)
+            print "Not enough affordances, waiting"
+            now = rospy.Time.now()
+            affs += self.affordances.getInterval(now - rospy.Duration(1), now)
 
-    #print sonarRight
-           # print "Markers", markers
         marks = self.avgMarkers(markers)
-
-        aff = self.affordances(sonarLeft, sonarRight, marks)
+#         markerClose = len(marks) > 0 and marks[0][1] < 2.0
         
-        return (marks, aff)
+        # All affordances in true if there is a landmark close
+        affordances = [a for a in affs[0].affordances]
+        
+        return (marks, affordances)
 
-    def affordances(self, sonarLeft, sonarRight, marks):
-        # If there are landmarks, ignore affordances
-        noMarks = len(marks) == 0
-        # If any value less than threshold
-        somethingLeft = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarLeft))
-        somethingRight = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarRight))
-        # If both have something, there is something front
-        somethingFront = somethingLeft and somethingRight
-        return [not somethingLeft, not somethingFront, not somethingRight]
+#     def affordances(self, sonarLeft, sonarRight, marks):
+#         # If there are landmarks, ignore affordances
+#         noMarks = len(marks) == 0
+#         # If any value less than threshold
+#         somethingLeft = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarLeft))
+#         somethingRight = noMarks and any(map(lambda msg : msg.range <= self.close_thrs, sonarRight))
+#         # If both have something, there is something front
+#         somethingFront = somethingLeft and somethingRight
+#         return [not somethingLeft, not somethingFront, not somethingRight]
     
     def avgMarkers(self, visMarkers):
         markerSamples = {}
@@ -95,7 +83,7 @@ class InfoGatherer(object):
     
 if __name__ == "__main__":
     rospy.init_node('infoGatherer')
-    
+
 #    try:
 #        motionProxy = ALProxy("ALMotion", "127.0.0.1", 9559)
 #        motionProxy.wakeUp()
