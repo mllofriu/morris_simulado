@@ -10,7 +10,7 @@ import rospy
 import socket
 from morris_simulation.nsl import InfoGatherer
 from morris_simulation.protobuf import connector_pb2 as proto
-import tf 
+
 
 from google.protobuf.internal import encoder
 from geometry_msgs.msg import Twist
@@ -20,12 +20,9 @@ class NSLConnector(object):
     classdocs
     '''
     
-    close_thrs = 3.
 
     def __init__(self):
         rospy.init_node('NSLConnector')
-
-        self.tf_listener = tf.TransformListener()
         
         # Flag that determines the validity of information gathered 
         self.validInformation = False
@@ -86,49 +83,18 @@ class NSLConnector(object):
     def getInfo(self):
         if not self.validInformation:
             self.markers, self.affordances = self.infoGatherer.gather()
-            # self.validInformation = True
 
         resp = proto.Response()
         resp.ok = True
-        #print(self.affordances)
         for b in self.affordances:
             resp.affs.aff.append(b)
         
-        # If have seen markers, look for them
-#         if (len(self.markers) > 0):
-#             for lm in self.markers:
-#                 try:
-#                     self.tf_listener.waitForTransform("robot", "/M" + str(lm.id + 1), rospy.Time(), rospy.Duration(3))
-#                     (t, rot) = self.tf_listener.lookupTransform("robot", "/M" + str(lm.id + 1), rospy.Time(0))
-#                     # Only add landmark if closer than threshold
-#                     print "Marca", (t[0], t[1]) 
-#                     if t[0] < self.close_thrs:
-#                         plm = resp.landmarks.add()
-#                         plm.id = lm.id
-#                         plm.x = t[0]
-#                         plm.y = t[1]  # t[1]
-#                         plm.z = 0
-#                         
-#                 except:
-#                      ROS_DEBUG("No transform for landmark /M%s",  str(lm.id + 1));
-#         # If not, look for slam markers
-#         else :
-        for id in range(4):
-            try:
-                self.tf_listener.waitForTransform("robot", "slam/M" + str(id + 1), rospy.Time(), rospy.Duration(3))
-                (t, rot) = self.tf_listener.lookupTransform("robot", "slam/M" + str(id + 1), rospy.Time(0))
-                # Only add landmark if closer than threshold
-                print "Marca (id, x, y)", (id, t[0], t[1]) 
-                if t[0] < self.close_thrs:
-                    plm = resp.landmarks.add()
-                    plm.id = id
-                    plm.x = t[0]
-                    plm.y = t[1]  # t[1]
-                    plm.z = 0
-                    
-            except:
-                 rospy.logdebug("No transform for landmark slam/M%s",  str(id + 1));
-        
+        for m in self.markers:
+            plm = resp.landmarks.add()
+            plm.id = m[0]
+            plm.x = m[1]
+            plm.y = m[2]  # t[1]
+            plm.z = m[3]
         
         self.sendMsg(resp)
 
