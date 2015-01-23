@@ -13,13 +13,12 @@ from morris_simulation.msg import Affordances
 from rospy import Duration
 
 class AffordancePublisher(object):
-    floorFrame = "/l_sole"
     affCalc = AffordanceCalc()
 
     def __init__(self):
         self.sub = rospy.Subscriber("/lines", PolygonsStamped, self.publishAffordances)
         self.pub = rospy.Publisher("/affordances", Affordances, queue_size=10)
-        rospy.loginfo( "Affordances initiated")
+        rospy.loginfo( "Affordance Publisher initiated")
     
     def publishAffordances(self, linesMsg):
         affMsg = Affordances()

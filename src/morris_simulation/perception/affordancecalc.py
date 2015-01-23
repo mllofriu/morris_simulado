@@ -55,11 +55,11 @@ class AffordanceCalc(object):
                 p1 = l.points[0]
                 p2 = l.points[1]
                 canMove = canMove and not tMoved.containedOrIntersect(Point(p1.x, p1.y, p1.z), Point(p2.x, p2.y, p2.z))
-                if not canMove:
-                    print "cant move to", angle
-                    print tMoved.vertices
-                    print p1
-                    print p2
+#                 if not canMove:
+#                     print "cant move to", angle
+#                     print tMoved.vertices
+#                     print p1
+#                     print p2
                 j += 1
             affordances.append(canMove)
             

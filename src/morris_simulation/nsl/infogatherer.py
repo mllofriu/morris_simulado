@@ -12,6 +12,7 @@ import rospy
 from visualization_msgs.msg import  Marker
 import message_filters
 from morris_simulation.msg import Affordances
+from ar_pose.msg import ARMarker
 
 class InfoGatherer(object):
     '''
@@ -22,25 +23,28 @@ class InfoGatherer(object):
     def __init__(self):
         # Listen to visualization_markers for markers
         sub = message_filters.Subscriber("/ar_pose/visualization_marker", Marker)
-        self.markersCache = message_filters.Cache(sub, 1)
-        sub = message_filters.Subscriber("/affordances",Affordances )
-        self.affordances = message_filters.Cache(sub, 1)
-        rospy.loginfo( "Gatherer initiated")        
+        self.markersCache = message_filters.Cache(sub, 10)
+        sub = message_filters.Subscriber("/affordances", Affordances)
+        self.affordancesCache = message_filters.Cache(sub, 10)
+        rospy.loginfo("Gatherer initiated")        
         rospy.sleep(1);
         
     def gather(self):
+        # Sleep to fill caches with recent info
+        # rospy.sleep(.5)
+        
         affs = []
         markers = []
         # Collect messages away from movement
         now = rospy.Time.now()
+        
+        # rospy.wait_for_message("/ar_pose/ar_pose_marker", ARMarker)        
+        while (self.affordancesCache.getLastestTime() != None and self.affordancesCache.getLastestTime() < now):
+            rospy.sleep(.1)
+               
+        affs += [self.affordancesCache.getElemBeforeTime(now)]
         markers += self.markersCache.getInterval(now - rospy.Duration(1), now)
-        affs += self.affordances.getInterval(now - rospy.Duration(1), now)
-        while len(affs) == 0:
-            rospy.sleep(.5)
-            print "Not enough affordances, waiting"
-            now = rospy.Time.now()
-            affs += self.affordances.getInterval(now - rospy.Duration(1), now)
-
+        
         marks = self.avgMarkers(markers)
 #         markerClose = len(marks) > 0 and marks[0][1] < 2.0
         
@@ -77,7 +81,7 @@ class InfoGatherer(object):
             x /= len(markerSamples[k])
             y /= len(markerSamples[k])
             z /= len(markerSamples[k])
-            averagedMarkers += [(k,x,y,z)]
+            averagedMarkers += [(k, x, y, z)]
         
         return averagedMarkers
     
