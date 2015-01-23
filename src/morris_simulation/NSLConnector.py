@@ -5,7 +5,6 @@ Created on May 22, 2013
 
 @author: mllofriu
 '''
-import roslib; roslib.load_manifest('morris_simulation')
 import rospy
 
 import socket
@@ -13,9 +12,8 @@ from morris_simulation.nsl import InfoGatherer
 from morris_simulation.protobuf import connector_pb2 as proto
 import tf 
 
-from naoqi import ALProxy
-
 from google.protobuf.internal import encoder
+from geometry_msgs.msg import Twist
 
 class NSLConnector(object):
     '''
@@ -44,44 +42,31 @@ class NSLConnector(object):
         s.bind(("0.0.0.0", port))  # Bind to the por
         rospy.loginfo("NSLConnector initialized")
         
+        self.cmd_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
+        vel = Twist()
+        self.cmd_vel_pub.publish(vel)
+        
         s.listen(5)  # Now wait for client connection.
 #        while True:
         self.con, addr = s.accept()  # Establish connection with client.
 #        self.processConnection()
-        try:
-            self.motionProxy = ALProxy("ALMotion", 'elvira', 9559)
-        except Exception, e:
-            print "Could not create proxy to ALMotion"
-            print "Error was: ", e
-            exit(1)
-            
-        try:
-            self.postureProxy = ALProxy("ALRobotPosture", 'elvira', 9559)
-        except Exception, e:
-            print "Could not create proxy to ALRobotPosture"
-            print "Error was: ", e
-            exit(1)
     
 
     def doAction(self, angle):
         print "Command", angle
+        vel = Twist()
         if angle == 0:
-            x = .05
-            y = 0
-            t = 0
-            f = .5
+            vel.linear.x = .1
         else:
-            x = 0
-            y = 0
-            t = angle 
-            f = .5 
-#         self.motionProxy.setWalkTargetVelocity(x, y, t, f)  
-        if angle == 0:
-            rospy.sleep(2) 
-        else :
-            rospy.sleep(2)
-        self.motionProxy.moveTo(x, y, t, [["MaxStepFrequency", .8], ["MaxStepX", 0.02]])
-        self.motionProxy.setWalkTargetVelocity(0, 0, 0, 0)  
+            vel.angular.z = angle/2
+        
+        self.cmd_vel_pub.publish(vel)
+        
+        rospy.sleep(1)
+        
+        vel = Twist()
+        self.cmd_vel_pub.publish(vel)
+        
         self.validInformation = False
         # Send Ok msg
         okMsg = proto.Response()
@@ -91,16 +76,6 @@ class NSLConnector(object):
     def startRobot(self):
         print "Start Robot"
 
-        # Send NAO to Pose Init
-        self.motionProxy.setSmartStiffnessEnabled(True)
-        self.postureProxy.goToPosture("StandInit", 0.5) 
-        
-        names = "HeadPitch"
-        angleLists = [.1, -.2]
-        timeLists = [.5, 1]
-        isAbsolute = True
-        self.motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
-        
         # Send Ok msg
         okMsg = proto.Response()
         okMsg.ok = True;
@@ -113,14 +88,14 @@ class NSLConnector(object):
 
         resp = proto.Response()
         resp.ok = True
-        print(self.affordances)
+        #print(self.affordances)
         for b in self.affordances:
             resp.affs.aff.append(b)
     
         for lm in self.markers:
             try:
-                self.tf_listener.waitForTransform("/base_footprint", "/M" + str(lm[0] + 1), rospy.Time(), rospy.Duration(3))
-                (t, rot) = self.tf_listener.lookupTransform("/base_footprint", "/M" + str(lm[0] + 1), rospy.Time(0))
+                self.tf_listener.waitForTransform("robot", "/M" + str(lm[0] + 1), rospy.Time(), rospy.Duration(3))
+                (t, rot) = self.tf_listener.lookupTransform("robot", "/M" + str(lm[0] + 1), rospy.Time(0))
             
                 plm = resp.landmarks.add()
                 # lm = (id, x, y, z) - x, y and z are not used since the transform is published
@@ -148,22 +123,20 @@ class NSLConnector(object):
         text = self.con.recv(4096)
         cmd.ParseFromString(text)
         
-        while cmd.type != proto.Command.stopRobot:
+        while cmd.type != proto.Command.stopRobot or rospy.is_shutdown():
             if cmd.type == proto.Command.doAction or cmd.type == proto.Command.rotate :
                 self.doAction(cmd.angle)
             elif cmd.type == proto.Command.startRobot:
                 self.startRobot()
             elif cmd.type == proto.Command.getInfo:
-                print "Getting info"
+                #print "Getting info"
                 self.getInfo()
-                print "Getting info done"
+                #print "Getting info done"
             
             text = self.con.recv(4096)
             cmd = proto.Command()
             cmd.ParseFromString(text)
        
-        self.postureProxy.goToPosture("Crouch", 0.5)    
-        self.motionProxy.rest()
 
         # Send Ok msg
         # okMsg = proto.Response()
