@@ -1,4 +1,4 @@
-option java_package = "edu.usf.ratsim.robot.naorobot.protobuf";
+option java_package = "edu.usf.ratsim.robot.romina.protobuf";
 
 message Command {
   enum CommandType {
@@ -24,9 +24,16 @@ message Affordances {
 	repeated bool aff = 1;
 }
 
+message Position {
+    required float x = 1;
+    required float y = 2;
+    required float theta = 3;
+}
+    
 message Response {
 	required bool ok = 1;
 	repeated Landmark landmarks = 2;
 	optional Affordances affs = 3;
+	optional Position robotPos = 4;
 }
 		

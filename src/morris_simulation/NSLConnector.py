@@ -30,6 +30,7 @@ class NSLConnector(object):
         self.afforances = None
         
         self.infoGatherer = InfoGatherer();
+        #self.infoGatherer.gather()
         
         # Open the socket 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
@@ -55,16 +56,16 @@ class NSLConnector(object):
         print "Command", angle
         vel = Twist()
         if angle == 0:
-            vel.linear.x = .1
+            vel.linear.x = .05
         else:
             vel.angular.z = angle/2
         
         self.cmd_vel_pub.publish(vel)
         
-        rospy.sleep(1)
+        rospy.sleep(.5)
         
-        vel = Twist()
-        self.cmd_vel_pub.publish(vel)
+#         vel = Twist()
+#         self.cmd_vel_pub.publish(vel)
         
         self.validInformation = False
         # Send Ok msg
@@ -81,9 +82,11 @@ class NSLConnector(object):
         self.sendMsg(okMsg)
 
     def getInfo(self):
-        if not self.validInformation:
-            self.markers, self.affordances = self.infoGatherer.gather()
-
+#         success = False
+#         while not success:
+#             try:
+        self.markers, self.affordances, self.robotPos = self.infoGatherer.gather()
+    
         resp = proto.Response()
         resp.ok = True
         for b in self.affordances:
@@ -96,7 +99,16 @@ class NSLConnector(object):
             plm.y = m[2]  # t[1]
             plm.z = m[3]
         
+        
+        resp.robotPos.x = self.robotPos[0]
+        resp.robotPos.y = self.robotPos[1]
+        resp.robotPos.theta = self.robotPos[2]
+    
         self.sendMsg(resp)
+                
+#                 success = True
+#             except:
+#                 rospy.logerr("Exception while trying to get info")
 
     def sendMsg(self, resp):
         #print "Sending info"  

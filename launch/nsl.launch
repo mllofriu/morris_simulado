@@ -1,6 +1,6 @@
 <launch>
 	<node name="aff_pub" pkg="morris_simulation" type="affordancePublisher.py" args="" required="true" output="screen" />
 	
-	<node name="connector" pkg="morris_simulation" type="NSLConnector.py" args="" required="true"	output="screen" />
+	<node name="connector" pkg="morris_simulation" type="NSLConnector.py" args="" output="screen" respawn="true" />
 	
 </launch>

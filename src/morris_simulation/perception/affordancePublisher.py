@@ -35,7 +35,7 @@ class AffordancePublisher(object):
         if linesMsg.polygons != None:
             affMsg.affordances = self.affCalc.calcAffordances(linesMsg.polygons)
         else:
-            affMsg.affordances = []
+            affMsg.affordances = self.affCalc.calcAffordances([])
         
         self.pub.publish(affMsg);
         

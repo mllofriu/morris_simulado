@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='connector.proto',
   package='',
-  serialized_pb='\n\x0f\x63onnector.proto\"\x9a\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x02\"S\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"P\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.AffordancesB(\n&edu.usf.ratsim.robot.naorobot.protobuf')
+  serialized_pb='\n\x0f\x63onnector.proto\"\x9a\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x02\"S\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"/\n\x08Position\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\x12\r\n\x05theta\x18\x03 \x02(\x02\"m\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.Affordances\x12\x1b\n\x08robotPos\x18\x04 \x01(\x0b\x32\t.PositionB&\n$edu.usf.ratsim.robot.romina.protobuf')
 
 
 
@@ -164,6 +164,48 @@ _AFFORDANCES = _descriptor.Descriptor(
 )
 
 
+_POSITION = _descriptor.Descriptor(
+  name='Position',
+  full_name='Position',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='x', full_name='Position.x', index=0,
+      number=1, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='y', full_name='Position.y', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='theta', full_name='Position.theta', index=2,
+      number=3, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=261,
+  serialized_end=308,
+)
+
+
 _RESPONSE = _descriptor.Descriptor(
   name='Response',
   full_name='Response',
@@ -192,6 +234,13 @@ _RESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='robotPos', full_name='Response.robotPos', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -201,17 +250,19 @@ _RESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=261,
-  serialized_end=341,
+  serialized_start=310,
+  serialized_end=419,
 )
 
 _COMMAND.fields_by_name['type'].enum_type = _COMMAND_COMMANDTYPE
 _COMMAND_COMMANDTYPE.containing_type = _COMMAND;
 _RESPONSE.fields_by_name['landmarks'].message_type = _LANDMARK
 _RESPONSE.fields_by_name['affs'].message_type = _AFFORDANCES
+_RESPONSE.fields_by_name['robotPos'].message_type = _POSITION
 DESCRIPTOR.message_types_by_name['Command'] = _COMMAND
 DESCRIPTOR.message_types_by_name['Landmark'] = _LANDMARK
 DESCRIPTOR.message_types_by_name['Affordances'] = _AFFORDANCES
+DESCRIPTOR.message_types_by_name['Position'] = _POSITION
 DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
 
 class Command(_message.Message):
@@ -232,6 +283,12 @@ class Affordances(_message.Message):
 
   # @@protoc_insertion_point(class_scope:Affordances)
 
+class Position(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _POSITION
+
+  # @@protoc_insertion_point(class_scope:Position)
+
 class Response(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _RESPONSE
@@ -240,5 +297,5 @@ class Response(_message.Message):
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), '\n&edu.usf.ratsim.robot.naorobot.protobuf')
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), '\n$edu.usf.ratsim.robot.romina.protobuf')
 # @@protoc_insertion_point(module_scope)

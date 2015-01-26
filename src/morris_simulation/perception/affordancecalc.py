@@ -15,9 +15,9 @@ class AffordanceCalc(object):
     '''
     classdocs
     '''
-    aperture = pi / 8
+    aperture = pi / 4
     possibleAngles = [-aperture, 0, aperture] 
-    lenght = .3
+    lenght = .4
     
     def __init__(self):
         '''
