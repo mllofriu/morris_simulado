@@ -11,6 +11,9 @@ import socket
 from morris_simulation.nsl import InfoGatherer
 from morris_simulation.protobuf import connector_pb2 as proto
 
+from robot_pose_fslam.srv import *
+from geometry_msgs.msg import Transform
+from tf.transformations import *
 
 from google.protobuf.internal import encoder
 from geometry_msgs.msg import Twist
@@ -45,6 +48,12 @@ class NSLConnector(object):
         self.cmd_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
         vel = Twist()
         self.cmd_vel_pub.publish(vel)
+
+        rospy.wait_for_service('resetLocation')
+        try:
+            self.resetLocation = rospy.ServiceProxy('resetLocation', ResetLocation)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
         
         s.listen(5)  # Now wait for client connection.
 #        while True:
@@ -76,6 +85,13 @@ class NSLConnector(object):
     def startRobot(self):
         print "Start Robot"
 
+        rp = ResetPosition()
+        rp.pose.translation.x = 1
+        rp.pose.translation.y = 1
+        rp.pose.rotation = quaternion_from_euler(0,0,pi/2)
+        rp.header.stamp = rospy.Time.now()
+        self.resetLocation(rp)
+        
         # Send Ok msg
         okMsg = proto.Response()
         okMsg.ok = True;
