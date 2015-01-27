@@ -7,10 +7,13 @@ message Command {
     getInfo = 2;
     startRobot = 3;
     stopRobot = 4;
+    resetPosition = 5;
   }
   optional CommandType type = 1 [default = getInfo];
   
   optional float angle = 2;
+  optional bool stop = 3 [default = false];
+  optional Position pos = 4;
 }
 
 message Landmark {

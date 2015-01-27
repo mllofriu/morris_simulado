@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='connector.proto',
   package='',
-  serialized_pb='\n\x0f\x63onnector.proto\"\x9a\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x02\"S\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"/\n\x08Position\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\x12\r\n\x05theta\x18\x03 \x02(\x02\"m\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.Affordances\x12\x1b\n\x08robotPos\x18\x04 \x01(\x0b\x32\t.PositionB&\n$edu.usf.ratsim.robot.romina.protobuf')
+  serialized_pb='\n\x0f\x63onnector.proto\"\xda\x01\n\x07\x43ommand\x12+\n\x04type\x18\x01 \x01(\x0e\x32\x14.Command.CommandType:\x07getInfo\x12\r\n\x05\x61ngle\x18\x02 \x01(\x02\x12\x13\n\x04stop\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x16\n\x03pos\x18\x04 \x01(\x0b\x32\t.Position\"f\n\x0b\x43ommandType\x12\x0c\n\x08\x64oAction\x10\x00\x12\n\n\x06rotate\x10\x01\x12\x0b\n\x07getInfo\x10\x02\x12\x0e\n\nstartRobot\x10\x03\x12\r\n\tstopRobot\x10\x04\x12\x11\n\rresetPosition\x10\x05\"7\n\x08Landmark\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x02(\x02\x12\t\n\x01y\x18\x03 \x02(\x02\x12\t\n\x01z\x18\x04 \x02(\x02\"\x1a\n\x0b\x41\x66\x66ordances\x12\x0b\n\x03\x61\x66\x66\x18\x01 \x03(\x08\"/\n\x08Position\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\x12\r\n\x05theta\x18\x03 \x02(\x02\"m\n\x08Response\x12\n\n\x02ok\x18\x01 \x02(\x08\x12\x1c\n\tlandmarks\x18\x02 \x03(\x0b\x32\t.Landmark\x12\x1a\n\x04\x61\x66\x66s\x18\x03 \x01(\x0b\x32\x0c.Affordances\x12\x1b\n\x08robotPos\x18\x04 \x01(\x0b\x32\t.PositionB&\n$edu.usf.ratsim.robot.romina.protobuf')
 
 
 
@@ -43,11 +43,15 @@ _COMMAND_COMMANDTYPE = _descriptor.EnumDescriptor(
       name='stopRobot', index=4, number=4,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='resetPosition', index=5, number=5,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=91,
-  serialized_end=174,
+  serialized_start=136,
+  serialized_end=238,
 )
 
 
@@ -72,6 +76,20 @@ _COMMAND = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='stop', full_name='Command.stop', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='pos', full_name='Command.pos', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -83,7 +101,7 @@ _COMMAND = _descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=20,
-  serialized_end=174,
+  serialized_end=238,
 )
 
 
@@ -131,8 +149,8 @@ _LANDMARK = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=176,
-  serialized_end=231,
+  serialized_start=240,
+  serialized_end=295,
 )
 
 
@@ -159,8 +177,8 @@ _AFFORDANCES = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=233,
-  serialized_end=259,
+  serialized_start=297,
+  serialized_end=323,
 )
 
 
@@ -201,8 +219,8 @@ _POSITION = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=261,
-  serialized_end=308,
+  serialized_start=325,
+  serialized_end=372,
 )
 
 
@@ -250,11 +268,12 @@ _RESPONSE = _descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=310,
-  serialized_end=419,
+  serialized_start=374,
+  serialized_end=483,
 )
 
 _COMMAND.fields_by_name['type'].enum_type = _COMMAND_COMMANDTYPE
+_COMMAND.fields_by_name['pos'].message_type = _POSITION
 _COMMAND_COMMANDTYPE.containing_type = _COMMAND;
 _RESPONSE.fields_by_name['landmarks'].message_type = _LANDMARK
 _RESPONSE.fields_by_name['affs'].message_type = _AFFORDANCES
