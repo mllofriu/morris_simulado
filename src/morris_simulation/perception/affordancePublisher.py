@@ -14,7 +14,8 @@ from rospy import Duration
 
 class AffordancePublisher(object):
     affCalc = AffordanceCalc()
-    waitingNonEmptyLines = False
+    maxEmptyLines = 5
+    waitingNonEmptyLines = maxEmptyLines
 
     def __init__(self):
         self.sub = rospy.Subscriber("/lines", PolygonsStamped, self.publishAffordances)
@@ -25,8 +26,8 @@ class AffordancePublisher(object):
     
     def publishAffordances(self, linesMsg):
         # In case of receiving no lines, wait for next message to confirm 
-        if linesMsg.polygons == None and not self.waitingNonEmptyLines:
-            self.waitingNonEmptyLines = True;
+        if linesMsg.polygons == None and self.waitingNonEmptyLines > 0:
+            self.waitingNonEmptyLines = self.waitingNonEmptyLines - 1;
             return
             
         affMsg = Affordances()
@@ -39,7 +40,7 @@ class AffordancePublisher(object):
         
         self.pub.publish(affMsg);
         
-        self.waitingNonEmptyLines = False
+        self.waitingNonEmptyLines = self.maxEmptyLines
         
            
         

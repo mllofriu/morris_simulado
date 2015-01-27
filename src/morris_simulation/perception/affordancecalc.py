@@ -15,9 +15,9 @@ class AffordanceCalc(object):
     '''
     classdocs
     '''
-    aperture = pi / 4
+    aperture = pi / 6
     possibleAngles = [-aperture, 0, aperture] 
-    lenght = .4
+    lenght = .3
     
     def __init__(self):
         '''
@@ -30,7 +30,6 @@ class AffordanceCalc(object):
         # make initial triangle
         o = Point(0, 0, 0)  
         # The triangle is a bit behind
-        oBehind = Point(-.2, 0, 0)
         v1 = Point(cos(self.aperture / 2) * self.lenght, sin(self.aperture / 2) * self.lenght, 0)
         v2 = Point(cos(self.aperture / 2) * self.lenght, -sin(self.aperture / 2) * self.lenght, 0)        
         t = Triangle([o, v1, v2])
@@ -72,10 +71,10 @@ class AffordanceCalc(object):
             markers.append(self.getLineStrip(geomPoints, i, rospy.Time.now(), color))
             i += 1
        
-#         for l in lines:
-# #            print "line", a
-#             markers.append(self.getLineStrip([l.p1, l.p2], i, rospy.Time.now(), 'g'))
-#             i = i + 1 
+        for l in lines:
+#            print "line", a
+            markers.append(self.getLineStrip([l.points[0], l.points[1]], i, rospy.Time.now(), 'g'))
+            i = i + 1 
             
         mArray = MarkerArray()
         mArray.markers = markers
@@ -104,5 +103,5 @@ class AffordanceCalc(object):
         if color == 'g':
             linesM.color.g = 1.0;
         linesM.color.a = 1.0;
-        linesM.lifetime = rospy.Duration(5.0)
+        linesM.lifetime = rospy.Duration(.10)
         return linesM

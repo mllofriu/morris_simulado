@@ -182,21 +182,42 @@ class Line:
             if abs(abs(t1t2)-1) < 1e-12: #parallel case                
                 d = orthogonalized_to(d,self.t)
                 return Point(self.r + 0.5*d)
+            elif (obj.t[0] == 0 and obj.t[2] == 0): # paralell to y axis
+                [p1,p2] = self.points()
+                [q1,q2] = obj.points() 
+                [xr,_,_] = q1.r
+                [x1,y1,_] = p1.r 
+                [x2,y2,_] = p2.r
+                yr = - ((y1-y2)/(x1-x2)) * (x1 - xr)  + y1
+                return Point(xr, yr, 0)
             else:
-                # Assumes that points are in the z=0 plane
+#                 # Assumes that points are in the z=0 plane
                 [p1,p2] = self.points()  
                 [q1,q2] = obj.points() 
                 [x1,y1,_] = p1.r 
                 [x2,y2,_] = p2.r
                 [x3,y3,_] = q1.r
                 [x4,y4,_] = q2.r
-                div = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4) 
-                x = (x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4)
-                x /= div
-                y = (x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x2*y4-y3*x4) 
-                y /= div 
-                z = 0
-                return Point(x,y,z)  
+#                 div = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4) 
+#                 x = (x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4)
+#                 x /= div
+#                 y = (x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x2*y4-y3*x4) 
+#                 y /= div 
+#                 z = 0
+                # return the intersection
+                a1 = y2-y1
+                b1 = x1-x2
+                c1 = x2*y1 - x1*y2 # { a1*x + b1*y + c1 = 0 is line 1 }
+                
+                a2 = y4-y3
+                b2 = x3-x4
+                c2 = x4*y3 - x3*y4 # { a2*x + b2*y + c2 = 0 is line 2 }
+                
+                denom = a1*b2 - a2*b1
+                
+                x = (b1*c2 - b2*c1)/denom;
+                y = (a2*c1 - a1*c2)/denom;
+                return Point(x,y,0)  
         else:
             return obj.midpoint_to(self)
     def __repr__(self):

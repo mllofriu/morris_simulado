@@ -22,7 +22,7 @@ class InfoGatherer(object):
     '''
 
     close_thrs = .5
-    initial_sleep = .5
+    initial_sleep = 0
     max_wait = 2
     
     def __init__(self):
@@ -54,7 +54,7 @@ class InfoGatherer(object):
                 (t, rot) = self.tf_listener.lookupTransform("robot", "slam/M" + str(id + 1), now)
                 # Only add landmark if closer than threshold
                 print "Marca (id, x, y)", (id, t[0], t[1]) 
-                if t[0] < self.close_thrs:
+                if t[0]**2 + t[1] ** 2 < self.close_thrs ** 2:
                     markers += [(id,t[0],t[1],0)]
             except:
                  rospy.logdebug("No transform for landmark slam/M%s",  str(id + 1));

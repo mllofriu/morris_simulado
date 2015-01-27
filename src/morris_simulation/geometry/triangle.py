@@ -40,6 +40,11 @@ class Triangle(object):
 #                print s, floorS, intersection, intersection.distance_to(s),intersection.distance_to(floorS)
                 # if the intersection belongs to the segment
                 if belongs(intersection, s) and belongs(intersection, floorS):
+#                     print "euclid", floorS.t, s.t
+#                     print "midpoint in line and belongs to segment"
+#                     print "midpoint", midPoint
+#                     print s
+#                     print p1, p2
                     return True
         
         return False

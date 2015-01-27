@@ -11,12 +11,13 @@ import socket
 from morris_simulation.nsl import InfoGatherer
 from morris_simulation.protobuf import connector_pb2 as proto
 
-from robot_pose_fslam.srv import *
+from robot_pose_fslam.srv import ResetPositionRequest, ResetPosition
 from geometry_msgs.msg import Transform
 from tf.transformations import *
 
 from google.protobuf.internal import encoder
 from geometry_msgs.msg import Twist
+from math import pi
 
 class NSLConnector(object):
     '''
@@ -48,12 +49,14 @@ class NSLConnector(object):
         self.cmd_vel_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
         vel = Twist()
         self.cmd_vel_pub.publish(vel)
-
-        rospy.wait_for_service('resetLocation')
+        
+        rospy.loginfo("Waiting for service resetLocation")
+        rospy.wait_for_service('/robot_pose_fslam/reset_position')
         try:
-            self.resetLocation = rospy.ServiceProxy('resetLocation', ResetLocation)
+            self.resetLocation = rospy.ServiceProxy('/robot_pose_fslam/reset_position', ResetPosition)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
+        rospy.loginfo("Service resetLocation acquired")
         
         s.listen(5)  # Now wait for client connection.
 #        while True:
@@ -61,21 +64,26 @@ class NSLConnector(object):
 #        self.processConnection()
     
 
-    def doAction(self, angle):
+    def doAction(self, angle, stop):
         print "Command", angle
         vel = Twist()
-        if angle == 0:
-            vel.linear.x = .05
+        if (not stop):
+            if angle == 0:
+                vel.linear.x = .1
+            else:
+                vel.angular.z = angle
         else:
-            vel.angular.z = angle/2
-        
+            vel.linear.x = 0
+            
         self.cmd_vel_pub.publish(vel)
+            
+        if (not stop):
+            rospy.sleep(1)
+            
+            vel = Twist()
+            self.cmd_vel_pub.publish(vel)
         
-        rospy.sleep(.5)
-        
-#         vel = Twist()
-#         self.cmd_vel_pub.publish(vel)
-        
+            
         self.validInformation = False
         # Send Ok msg
         okMsg = proto.Response()
@@ -85,10 +93,38 @@ class NSLConnector(object):
     def startRobot(self):
         print "Start Robot"
 
-        rp = ResetPosition()
-        rp.pose.translation.x = 1
-        rp.pose.translation.y = 1
-        rp.pose.rotation = quaternion_from_euler(0,0,pi/2)
+        # Spin 4 times to make map
+#         for i in range(8):
+#             vel = Twist()
+#             vel.linear.x = 0
+#             vel.angular.z = pi / 8
+#                 
+#             self.cmd_vel_pub.publish(vel)
+#                 
+#             rospy.sleep(1.8)
+#                 
+#             vel = Twist()
+#             self.cmd_vel_pub.publish(vel)
+#         
+#             rospy.sleep(8)
+        
+        # Send Ok msg
+        okMsg = proto.Response()
+        okMsg.ok = True;
+        self.sendMsg(okMsg)
+        
+    def resetPosition(self, pos):
+        print "Reseting position"
+
+        rp = ResetPositionRequest()
+        rp.pose.translation.x = pos.x 
+        rp.pose.translation.y = pos.y
+        rp.pose.translation.z = 0
+        rot = quaternion_from_euler(0,0,pos.theta)
+        rp.pose.rotation.x = rot[0]
+        rp.pose.rotation.y = rot[1]
+        rp.pose.rotation.z = rot[2]
+        rp.pose.rotation.w = rot[3] 
         rp.header.stamp = rospy.Time.now()
         self.resetLocation(rp)
         
@@ -133,23 +169,33 @@ class NSLConnector(object):
         #print "Info sent"
 
     def processConnection(self):
-        cmd = proto.Command()
-        text = self.con.recv(4096)
-        cmd.ParseFromString(text)
-        
-        while cmd.type != proto.Command.stopRobot or rospy.is_shutdown():
-            if cmd.type == proto.Command.doAction or cmd.type == proto.Command.rotate :
-                self.doAction(cmd.angle)
-            elif cmd.type == proto.Command.startRobot:
-                self.startRobot()
-            elif cmd.type == proto.Command.getInfo:
-                #print "Getting info"
-                self.getInfo()
-                #print "Getting info done"
+        ended = False
+        while not ended or rospy.is_shutdown():
+            try:
+                self.con.settimeout(60)
+                text = self.con.recv(4096)
+                cmd = proto.Command()
+                cmd.ParseFromString(text)
+                
+                if cmd.type == proto.Command.doAction or cmd.type == proto.Command.rotate :
+                    self.doAction(cmd.angle, cmd.stop)
+                elif cmd.type == proto.Command.startRobot:
+                    self.startRobot()
+                elif cmd.type == proto.Command.getInfo:
+                    #print "Getting info"
+                    self.getInfo()
+                elif cmd.type == proto.Command.resetPosition:
+                    #print "Getting info"
+                    self.resetPosition(cmd.pos)
+                    #print "Getting info done"
+                
+                ended = cmd.type == proto.Command.stopRobot
+            except:
+                ROS_ERROR("Error while trying to comply with command, trying again in a few seconds")
+                rospy.sleep(1.0)
+                
             
-            text = self.con.recv(4096)
-            cmd = proto.Command()
-            cmd.ParseFromString(text)
+            
        
 
         # Send Ok msg
